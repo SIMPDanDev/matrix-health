@@ -177,9 +177,13 @@ export type ServiceRequest = {
   phone: string
   contact_method: string
   comment: string | null
+  /** Запрос цены: товары, которые выбрал покупатель (режим витрины) */
+  items: RequestItem[] | null
   admin_note: string | null
   created_at: string
 }
+
+export type RequestItem = { name: string; variant: string | null; qty: number }
 
 export type Catalog = {
   products: Product[]

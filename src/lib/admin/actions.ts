@@ -562,6 +562,6 @@ export async function setSalesEnabled(_prev: FormState, fd: FormData): Promise<F
   refresh()
   return {
     ok: true,
-    message: enabled ? 'Продажи включены: цены, корзина и заказы уже на сайте' : 'Включён режим витрины: цены и корзина скрыты',
+    message: enabled ? 'Продажи включены: цены, корзина и заказы уже на сайте' : 'Включён режим витрины: на сайте «Цена по запросу»',
   }
 }

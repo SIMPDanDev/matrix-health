@@ -2,6 +2,7 @@ import 'server-only'
 import { headers } from 'next/headers'
 import { CONTACT_LABELS, PAYMENT_LABELS } from './constants'
 import { eur, orderNo } from './format'
+import type { RequestItem } from './types'
 
 // Уведомления в Telegram о новых заказах и заявках.
 // Токен бота и получатели — в переменных окружения (см. .env.example), в базе их нет.
@@ -129,8 +130,8 @@ export type RequestNotice = {
   adminUrl: string | null
   lang: string
   service: { name: string; price: number | null; period: 'once' | 'month' } | null
-  /** Заявка «Сообщить о старте продаж» со страницы товара (режим витрины) */
-  product?: string | null
+  /** Запрос цены (режим витрины): товары, которые выбрал покупатель */
+  items?: RequestItem[] | null
   customer: { name: string; phone: string; contact: string; comment: string }
 }
 
@@ -140,8 +141,8 @@ export function requestMessage(r: RequestNotice) {
   const c = r.customer
 
   return [
-    r.product ? `🔔 <b>Ждёт старта продаж №${orderNo(r.number)}</b>` : `🩺 <b>Заявка на консультацию №${orderNo(r.number)}</b>`,
-    r.product && block('📦 <b>Товар</b>', esc(r.product)),
+    r.items ? `🔔 <b>Запрос цены №${orderNo(r.number)}</b>` : `🩺 <b>Заявка на консультацию №${orderNo(r.number)}</b>`,
+    r.items && block('📦 <b>Товары</b>', ...r.items.map((i) => `• ${esc(i.name)}${i.variant ? ` (${esc(i.variant)})` : ''} × ${i.qty}`)),
     s && block('📋 <b>Услуга</b>', `${esc(s.name)} — ${price}`),
     block(
       '👤 <b>Клиент</b>',
@@ -150,7 +151,9 @@ export function requestMessage(r: RequestNotice) {
       line('Как связаться', CONTACT_LABELS[c.contact] ?? c.contact),
       line('Язык сайта', LANG_NAMES[r.lang]),
     ),
-    !r.product && block('🎯 <b>Цель клиента</b>', c.comment ? `<i>${esc(c.comment)}</i>` : 'не указана'),
+    r.items
+      ? c.comment && block('💬 <b>Комментарий</b>', `<i>${esc(c.comment)}</i>`)
+      : block('🎯 <b>Цель клиента</b>', c.comment ? `<i>${esc(c.comment)}</i>` : 'не указана'),
     r.adminUrl && `<a href="${r.adminUrl}">Открыть заявки в админке</a>`,
   ]
     .filter(Boolean)

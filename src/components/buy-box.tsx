@@ -6,7 +6,8 @@ import type { Product } from '@/lib/types'
 import { BuyButtons } from './add-to-cart'
 import { IconMinus, IconPlus } from './icons'
 
-export function BuyBox({ product }: { product: Product }) {
+/** inquiry — режим витрины: «Цена по запросу» и кнопка «Запросить цену» вместо «В корзину» */
+export function BuyBox({ product, inquiry }: { product: Product; inquiry?: boolean }) {
   const { t, money, fmt } = useI18n()
   const { variants } = product
   const firstAvailable = variants.find((v) => v.stock > 0) ?? variants[0]
@@ -21,9 +22,13 @@ export function BuyBox({ product }: { product: Product }) {
   return (
     <div className="rounded-3xl border border-line bg-surface p-5 sm:p-6">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-[34px] leading-none font-semibold tracking-[-0.02em] tabular-nums">{money(price)}</span>
-        {oldPrice && <span className="text-lg text-mute line-through tabular-nums">{money(oldPrice)}</span>}
-        {product.unit_label && <span className="text-sm text-mute">{product.unit_label}</span>}
+        {inquiry ? (
+          <span className="text-[28px] leading-none font-semibold tracking-[-0.02em]">{t.showcase.priceOnRequest}</span>
+        ) : (
+          <span className="text-[34px] leading-none font-semibold tracking-[-0.02em] tabular-nums">{money(price)}</span>
+        )}
+        {!inquiry && oldPrice && <span className="text-lg text-mute line-through tabular-nums">{money(oldPrice)}</span>}
+        {!inquiry && product.unit_label && <span className="text-sm text-mute">{product.unit_label}</span>}
       </div>
 
       <p className={`mt-3 flex items-center gap-2 text-sm ${stock > 0 ? 'text-sage-dark' : 'text-signal'}`}>
@@ -83,6 +88,7 @@ export function BuyBox({ product }: { product: Product }) {
         <BuyButtons
           qty={qty}
           disabled={stock <= 0}
+          inquiry={inquiry}
           line={{
             productId: product.id,
             variantId: variant?.id ?? null,

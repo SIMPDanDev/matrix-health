@@ -26,8 +26,8 @@ function useAllInCart(line: LineInput) {
   return inCart >= maxQty(line)
 }
 
-/** Маленькая кнопка «+» на карточке товара */
-export function QuickAdd({ line, name }: { line: LineInput; name: string }) {
+/** Маленькая кнопка «+» на карточке товара. inquiry — режим витрины: товар добавляется в запрос цены */
+export function QuickAdd({ line, name, inquiry }: { line: LineInput; name: string; inquiry?: boolean }) {
   const [added, flash] = useAdded()
   const full = useAllInCart(line)
   const { t, fmt } = useI18n()
@@ -36,12 +36,12 @@ export function QuickAdd({ line, name }: { line: LineInput; name: string }) {
     <button
       type="button"
       disabled={full && !added}
-      title={full ? t.product.allInCart : undefined}
+      title={full ? (inquiry ? t.showcase.allInList : t.product.allInCart) : undefined}
       onClick={() => {
         cart.add(line)
         flash()
       }}
-      aria-label={fmt(t.product.addAria, { name })}
+      aria-label={fmt(inquiry ? t.showcase.addAria : t.product.addAria, { name })}
       className={`flex size-11 shrink-0 items-center justify-center rounded-full transition-all ${
         added || full ? 'bg-brand-soft text-brand-dark' : 'bg-brand text-white hover:scale-105 hover:bg-brand-dark'
       }`}
@@ -51,11 +51,12 @@ export function QuickAdd({ line, name }: { line: LineInput; name: string }) {
   )
 }
 
-/** Кнопки «В корзину» и «Перейти в корзину» на странице товара */
-export function BuyButtons({ line, qty, disabled }: { line: LineInput; qty: number; disabled?: boolean }) {
+/** Кнопки «В корзину» и «Перейти в корзину» на странице товара. inquiry — «Запросить цену» и «Перейти к запросу» */
+export function BuyButtons({ line, qty, disabled, inquiry }: { line: LineInput; qty: number; disabled?: boolean; inquiry?: boolean }) {
   const [added, flash] = useAdded()
   const full = useAllInCart(line)
   const { t, path } = useI18n()
+  const s = t.showcase
 
   return (
     <div className="flex flex-1 flex-wrap gap-2">
@@ -70,12 +71,14 @@ export function BuyButtons({ line, qty, disabled }: { line: LineInput; qty: numb
       >
         {added ? (
           <>
-            <IconCheck size={18} /> {t.product.added}
+            <IconCheck size={18} /> {inquiry ? s.added : t.product.added}
           </>
         ) : disabled ? (
           t.product.notAvailable
         ) : full ? (
-          t.product.allInCart
+          inquiry ? s.allInList : t.product.allInCart
+        ) : inquiry ? (
+          s.addToList
         ) : (
           t.product.addToCart
         )}
@@ -85,7 +88,7 @@ export function BuyButtons({ line, qty, disabled }: { line: LineInput; qty: numb
           href={path('/cart')}
           className="inline-flex h-13 items-center justify-center rounded-full border border-brand px-5 font-medium text-brand hover:bg-brand hover:text-white"
         >
-          {t.product.goToCart}
+          {inquiry ? s.goToList : t.product.goToCart}
         </Link>
       )}
     </div>

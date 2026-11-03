@@ -66,7 +66,7 @@ export default async function RequestsPage(props: PageProps<'/admin/requests'>) 
 
   return (
     <>
-      <AdminTitle title="Заявки" sub={`На консультацию, сопровождение и старт продаж · всего: ${counts.data?.length ?? 0}`}>
+      <AdminTitle title="Заявки" sub={`На консультацию, сопровождение и запросы цены · всего: ${counts.data?.length ?? 0}`}>
         <Link href="/admin/services" className="inline-flex h-9 items-center rounded-md border border-line bg-surface px-3.5 text-sm font-medium hover:border-ink">
           Услуги и цены
         </Link>
@@ -124,10 +124,21 @@ export default async function RequestsPage(props: PageProps<'/admin/requests'>) 
                     </span>
                   )}
                 </p>
+                {r.items && (
+                  <ul className="mt-1.5 space-y-0.5 text-[15px] text-ink-2">
+                    {r.items.map((i, n) => (
+                      <li key={n}>
+                        {i.name}
+                        {i.variant && <span className="text-mute"> · {i.variant}</span>}
+                        <span className="tabular-nums"> × {i.qty}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {r.comment ? (
                   <p className="mt-1.5 max-w-3xl text-[15px] leading-relaxed whitespace-pre-line text-ink-2">{r.comment}</p>
                 ) : (
-                  <p className="mt-1.5 text-sm text-mute">Цель не указана</p>
+                  !r.items && <p className="mt-1.5 text-sm text-mute">Цель не указана</p>
                 )}
                 <RequestNote key={r.admin_note ?? ''} id={r.id} note={r.admin_note} />
               </div>

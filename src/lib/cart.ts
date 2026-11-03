@@ -89,17 +89,18 @@ export const cart = {
   setQty(key: string, qty: number) {
     write(lines.map((l) => (l.key === key ? { ...l, qty: Math.max(1, Math.min(maxQty(l), qty)) } : l)))
   },
-  /** Свежие остатки из базы: количество уменьшается до остатка (но не ниже 1 — товар без остатка покупатель удалит сам) */
-  syncStock(stock: Record<string, number>) {
+  /** Свежие остатки (и цены) из базы: количество уменьшается до остатка (но не ниже 1 — товар без остатка покупатель удалит сам) */
+  syncStock(stock: Record<string, number>, prices?: Record<string, number>) {
     if (!loaded) read()
     let changed = false
     const next = lines.map((l) => {
       if (!(l.key in stock)) return l
       const s = stock[l.key]
       const qty = Math.max(1, Math.min(l.qty, s))
-      if (s === l.stock && qty === l.qty) return l
+      const price = prices?.[l.key] ?? l.price
+      if (s === l.stock && qty === l.qty && price === l.price) return l
       changed = true
-      return { ...l, stock: s, qty }
+      return { ...l, stock: s, qty, price }
     })
     if (changed) write(next)
   },

@@ -7,36 +7,55 @@ import { getCatalog } from '@/lib/data'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { createPublicClient } from '@/lib/supabase/public'
 import { requestMessage, sendTelegram, siteOrigin } from '@/lib/telegram'
+import type { RequestItem } from '@/lib/types'
+
+export type InquiryState = Omit<RequestState, 'error'> & { error?: RequestState['error'] | 'empty' }
+
+type ItemInput = { product_id: string; variant_id: string | null; qty: number }
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? '').trim()
-const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
 
-/** Заявка «Сообщить о старте продаж» — в режиме витрины вместо кнопки «В корзину» */
-export async function requestProduct(_prev: RequestState, fd: FormData): Promise<RequestState> {
+/** Запрос цены (режим витрины): список товаров из корзины и контакты — продавец перезванивает */
+export async function requestPrices(_prev: InquiryState, fd: FormData): Promise<InquiryState> {
   // Ловушка для ботов: поле скрыто от людей
   if (str(fd, 'website')) return { ok: true, number: 0 }
 
-  const product = str(fd, 'product_id')
   const request = {
     customer_name: str(fd, 'customer_name'),
     phone: str(fd, 'phone'),
     contact_method: str(fd, 'contact_method'),
+    comment: str(fd, 'comment'),
   }
 
-  const fields: RequestState['fields'] = {}
+  const fields: InquiryState['fields'] = {}
   if (request.customer_name.length < 2) fields.customer_name = 'name'
   if (request.phone.replace(/\D/g, '').length < 8) fields.phone = 'phone'
   if (!(CONTACT_METHODS as readonly string[]).includes(request.contact_method)) request.contact_method = 'phone'
   if (Object.keys(fields).length) return { error: 'check', fields }
-  if (!isUuid(product)) return { error: 'unavailable' }
+
+  let items: ItemInput[] = []
+  try {
+    const parsed = JSON.parse(str(fd, 'items'))
+    items = (Array.isArray(parsed) ? parsed : [])
+      .map((i) => ({
+        product_id: String(i.product_id),
+        variant_id: i.variant_id ? String(i.variant_id) : null,
+        qty: Math.max(1, Math.min(99, Number(i.qty) || 1)),
+      }))
+      .slice(0, 50)
+  } catch {
+    items = []
+  }
+  if (!items.length) return { error: 'empty' }
 
   if (!isSupabaseConfigured) return { error: 'notConnected' }
 
-  const { data, error } = await createPublicClient().rpc('request_product', { p_product: product, p_request: request })
+  const { data, error } = await createPublicClient().rpc('request_products', { p_items: items, p_request: request })
 
   if (error) {
-    // Тексты ошибок request_product — на русском; переводим известные в коды
+    // Тексты ошибок request_products — на русском; переводим известные в коды
     if (/недоступ/i.test(error.message)) return { error: 'unavailable' }
+    if (/Список/i.test(error.message)) return { error: 'empty' }
     if (/имя/i.test(error.message)) return { error: 'check', fields: { customer_name: 'name' } }
     if (/телефон/i.test(error.message)) return { error: 'check', fields: { phone: 'phone' } }
     return { error: 'failed' }
@@ -48,14 +67,19 @@ export async function requestProduct(_prev: RequestState, fd: FormData): Promise
   // Уведомление в Telegram — уже после ответа посетителю, чтобы он не ждал
   after(async () => {
     const [{ products }, origin] = await Promise.all([getCatalog(), siteOrigin()])
+    const lines: RequestItem[] = items.map((i) => {
+      const p = products.find((x) => x.id === i.product_id)
+      const v = p?.variants.find((x) => x.id === i.variant_id)
+      return { name: p?.name ?? '—', variant: v?.label ?? null, qty: i.qty }
+    })
     await sendTelegram(
       requestMessage({
         number,
         adminUrl: origin ? `${origin}/admin/requests` : null,
         lang,
         service: null,
-        product: products.find((p) => p.id === product)?.name ?? 'товар с сайта',
-        customer: { name: request.customer_name, phone: request.phone, contact: request.contact_method, comment: '' },
+        items: lines,
+        customer: { name: request.customer_name, phone: request.phone, contact: request.contact_method, comment: request.comment },
       }),
     )
   })

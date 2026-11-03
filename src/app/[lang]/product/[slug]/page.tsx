@@ -8,7 +8,6 @@ import { DocRow } from '@/components/doc-row'
 import { IconShield, IconSnow, IconTruck } from '@/components/icons'
 import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
-import { ShowcaseBox } from '@/components/showcase-box'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { filterName } from '@/lib/filters'
@@ -94,7 +93,12 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
           </p>
 
           <div className="mt-6">
-            {settings.sales_enabled ? <BuyBox product={p} /> : <ShowcaseBox productId={p.id} hours={settings.working_hours} />}
+            {settings.sales_enabled ? (
+              <BuyBox product={p} />
+            ) : (
+              // Режим витрины: «Цена по запросу». Цены обнуляем, чтобы они не попали в браузер
+              <BuyBox inquiry product={{ ...p, price: 0, old_price: null, variants: p.variants.map((v) => ({ ...v, price: 0 })) }} />
+            )}
           </div>
 
           <ul className="mt-5 grid gap-3 text-sm text-ink-2 sm:grid-cols-3">

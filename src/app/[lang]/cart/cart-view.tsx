@@ -8,14 +8,25 @@ import { btn } from '@/components/ui'
 import { cart, maxQty, useCart } from '@/lib/cart'
 import { useI18n } from '@/i18n/client'
 
-export function CartView({ deliveryCost, freeFrom, stock }: { deliveryCost: number; freeFrom: number; stock: Record<string, number> }) {
+export function CartView({
+  deliveryCost,
+  freeFrom,
+  stock,
+  prices,
+}: {
+  deliveryCost: number
+  freeFrom: number
+  stock: Record<string, number>
+  prices: Record<string, number>
+}) {
   const { items, count, subtotal } = useCart()
   const { t, path, money, plural, fmt } = useI18n()
 
-  // Подтягиваем свежие остатки: лишнее количество уменьшается до того, что есть на складе
+  // Подтягиваем свежие остатки и цены: лишнее количество уменьшается до того, что есть на складе.
+  // Цены — для товаров, добавленных в режиме витрины (там цена в корзине нулевая)
   useEffect(() => {
-    cart.syncStock(stock)
-  }, [stock, items.length])
+    cart.syncStock(stock, prices)
+  }, [stock, prices, items.length])
 
   if (items.length === 0) {
     return (

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { SalesClosed } from '@/components/sales-closed'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { mailConfig } from '@/lib/mail'
@@ -15,12 +15,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CheckoutPage() {
   const { i18n, settings: s } = await getShop()
   const { t, path } = i18n
+  // Режим витрины: заказов нет, вместо них — запрос цены на странице корзины
+  if (!s.sales_enabled) redirect(path('/cart'))
 
   return (
     <div className={`${wrap} pt-6 lg:pt-8`}>
       <Breadcrumbs items={[{ href: path('/cart'), label: t.checkout.crumbCart }, { label: t.checkout.crumbCheckout }]} />
       <h1 className="mt-5 mb-10 text-[clamp(2rem,4.5vw,3.25rem)] leading-none font-bold tracking-[-0.035em]">{t.checkout.title}</h1>
-      {!s.sales_enabled ? <SalesClosed /> : <CheckoutForm deliveryCost={s.delivery_cost} freeFrom={s.free_delivery_from} emailCopy={mailConfig.configured} />}
+      <CheckoutForm deliveryCost={s.delivery_cost} freeFrom={s.free_delivery_from} emailCopy={mailConfig.configured} />
     </div>
   )
 }
