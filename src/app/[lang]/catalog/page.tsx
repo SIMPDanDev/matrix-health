@@ -4,17 +4,28 @@ import { Suspense } from 'react'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { CatalogControls } from '@/components/catalog-controls'
 import { IconChevron } from '@/components/icons'
+import { JsonLd } from '@/components/json-ld'
 import { ProductCard } from '@/components/product-card'
 import { btn, wrap } from '@/components/ui'
 import { applyFilters, catalogHref, displayPrice, parseFilters, type Filters } from '@/lib/catalog'
-import { getI18n } from '@/i18n/server'
 import type { Lang } from '@/i18n/config'
 import { PRICE_SORTS } from '@/lib/constants'
-import { getShop } from '@/lib/shop'
+import { breadcrumbSchema, snippet } from '@/lib/seo'
+import { getShop, shopMeta } from '@/lib/shop'
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n()
-  return { title: t.meta.catalog, description: t.meta.catalogDescription }
+export async function generateMetadata(props: PageProps<'/[lang]/catalog'>): Promise<Metadata> {
+  const [params, { i18n, catalog }] = await Promise.all([props.searchParams, getShop()])
+  const { t } = i18n
+  const filters = parseFilters(params)
+  const category = catalog.categories.find((c) => c.slug === filters.cat) ?? null
+
+  // Для Google у каталога есть только страницы категорий: фильтры и сортировка ведут (canonical) на них,
+  // а результаты поиска не индексируются
+  const meta = await shopMeta(category ? `/catalog?cat=${category.slug}` : '/catalog', {
+    title: category?.name ?? t.meta.catalog,
+    description: snippet(category?.description) ?? t.meta.catalogDescription,
+  })
+  return filters.q ? { ...meta, robots: { index: false, follow: true } } : meta
 }
 
 export default function CatalogPage(props: PageProps<'/[lang]/catalog'>) {
@@ -62,6 +73,13 @@ async function CatalogView({ searchParams }: Pick<PageProps<'/[lang]/catalog'>, 
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema(lang, [
+          { name: t.nav.home, path: '/' },
+          { name: t.nav.catalog, path: '/catalog' },
+          ...(category ? [{ name: category.name, path: `/catalog?cat=${category.slug}` }] : []),
+        ])}
+      />
       <Breadcrumbs items={category ? [{ href: path('/catalog'), label: t.nav.catalog }, { label: category.name }] : [{ label: t.nav.catalog }]} />
 
       <div className="mt-5 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">

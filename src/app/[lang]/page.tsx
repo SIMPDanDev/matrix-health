@@ -1,11 +1,19 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { IconArrow, IconPhone, IconShield, IconSnow, IconTruck } from '@/components/icons'
 import { ProductCard } from '@/components/product-card'
 import { ProductVisual } from '@/components/product-visual'
 import { btn, wrap } from '@/components/ui'
-import { getShop, getShopPage, getShopServices } from '@/lib/shop'
+import { getI18n } from '@/i18n/server'
+import { getSettings } from '@/lib/data'
+import { getShop, getShopPage, getShopServices, shopMeta } from '@/lib/shop'
 import { tone } from '@/lib/tones'
 import type { PeptidesContent, Product } from '@/lib/types'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [{ t }, s] = await Promise.all([getI18n(), getSettings()])
+  return shopMeta('/', { title: { absolute: `${s.store_name} — ${t.meta.homeTitle}` }, description: t.meta.homeDescription })
+}
 
 export default async function HomePage() {
   const [{ i18n, catalog, settings: s }, services, about] = await Promise.all([

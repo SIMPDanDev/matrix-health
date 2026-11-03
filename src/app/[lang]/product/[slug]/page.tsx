@@ -5,23 +5,30 @@ import { Suspense } from 'react'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { BuyBox } from '@/components/buy-box'
 import { DocRow } from '@/components/doc-row'
+import { JsonLd } from '@/components/json-ld'
 import { IconShield, IconSnow, IconTruck } from '@/components/icons'
 import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { filterName } from '@/lib/filters'
-import { getShop, getShopProduct } from '@/lib/shop'
+import { breadcrumbSchema, productSchema, snippet } from '@/lib/seo'
+import { getShop, getShopProduct, shopMeta } from '@/lib/shop'
 
 export async function generateMetadata(props: PageProps<'/[lang]/product/[slug]'>): Promise<Metadata> {
   const { slug } = await props.params
-  const [data, { t }] = await Promise.all([getShopProduct(slug), getI18n()])
-  if (!data) return { title: t.meta.productNotFound }
-  return {
-    title: data.product.name,
-    description: data.product.short_description ?? undefined,
-    openGraph: data.product.images[0] ? { images: [data.product.images[0]] } : undefined,
-  }
+  const [data, { t, fmt }] = await Promise.all([getShopProduct(slug), getI18n()])
+  if (!data) return { title: t.meta.productNotFound, robots: { index: false } }
+  const p = data.product
+  return shopMeta(`/product/${p.slug}`, {
+    title: p.pack ? `${p.name}, ${p.pack}` : p.name,
+    // Без описания в базе — короткий текст из названия и категории
+    description:
+      snippet(p.short_description) ??
+      snippet(p.description) ??
+      fmt(t.meta.productDescription, { name: p.name, category: p.category?.name ?? t.meta.catalog }),
+    image: p.images[0] ?? null,
+  })
 }
 
 export default function ProductPage(props: PageProps<'/[lang]/product/[slug]'>) {
@@ -38,7 +45,7 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
   const { slug } = await params
   const [data, { i18n, catalog, settings }] = await Promise.all([getShopProduct(slug), getShop()])
   if (!data) notFound()
-  const { t, path, money, plural, fmt } = i18n
+  const { t, lang, path, money, plural, fmt } = i18n
 
   const { product: p, certificates, related } = data
   const withDocs = new Set(catalog.certificates.map((c) => c.product_id))
@@ -53,6 +60,18 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbSchema(lang, [
+            { name: t.nav.home, path: '/' },
+            { name: t.nav.catalog, path: '/catalog' },
+            ...(p.category ? [{ name: p.category.name, path: `/catalog?cat=${p.category.slug}` }] : []),
+            { name: p.name, path: `/product/${p.slug}` },
+          ]),
+          // Разметка товара с ценой — только когда продажи включены: при «Цене по запросу» цены в ней быть не должно
+          ...(settings.sales_enabled ? [productSchema(lang, p, settings.store_name)] : []),
+        ]}
+      />
       <Breadcrumbs
         items={[
           { href: path('/catalog'), label: t.nav.catalog },

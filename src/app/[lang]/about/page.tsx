@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { PageHead } from '@/components/page-head'
 import { btn, wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
-import { getShop } from '@/lib/shop'
+import { getShop, shopMeta } from '@/lib/shop'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n()
-  return { title: t.meta.about }
+  return shopMeta('/about', { title: t.meta.about, description: t.meta.aboutDescription })
 }
 
 export default async function AboutPage() {

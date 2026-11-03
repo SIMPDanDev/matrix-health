@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { LOCALES, LANG_NAMES } from '@/i18n/config'
+import { LOCALES, LANG_NAMES, localePath } from '@/i18n/config'
 import { fontVariables } from './fonts'
 import './globals.css'
 
@@ -16,7 +16,7 @@ export default function GlobalNotFound() {
           <h1 className="mt-4 text-2xl font-bold">Page not found</h1>
           <div className="mt-8 flex justify-center gap-3">
             {LOCALES.map((l) => (
-              <a key={l} href={`/${l}`} className="rounded-full border border-line-strong bg-surface px-5 py-2.5 font-medium hover:border-brand hover:text-brand">
+              <a key={l} href={localePath(l, '/')} className="rounded-full border border-line-strong bg-surface px-5 py-2.5 font-medium hover:border-brand hover:text-brand">
                 {LANG_NAMES[l].name}
               </a>
             ))}

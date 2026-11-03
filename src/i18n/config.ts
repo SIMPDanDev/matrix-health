@@ -1,9 +1,11 @@
-// Языки сайта. Английский — основной: он открывается, если язык не выбран и браузер не подсказал другой.
+// Языки сайта. Английский — основной: его адреса без префикса (/catalog),
+// у румынского и русского — с префиксом (/ro/catalog, /ru/catalog). Так каждую версию находит Google.
 export const LOCALES = ['en', 'ro', 'ru'] as const
 export type Lang = (typeof LOCALES)[number]
 export const DEFAULT_LANG: Lang = 'en'
 
-// Cookie, в которой запоминается выбор посетителя (ставит переключатель языка)
+// Cookie, в которой запоминается выбор посетителя (ставит переключатель языка).
+// По ней адрес без префикса ведёт на выбранный язык: /catalog → /ru/catalog
 export const LANG_COOKIE = 'hm_lang'
 
 export const LANG_NAMES: Record<Lang, { short: string; name: string }> = {
@@ -39,12 +41,13 @@ export function matchLanguage(acceptLanguage: string | null): Lang | null {
 }
 
 /**
- * Адрес страницы. Язык в адресе не пишется — он хранится в cookie посетителя,
- * поэтому ссылка одинакова для всех языков: localePath('ro', '/catalog') → '/catalog'.
- * Параметр lang оставлен, чтобы при желании легко вернуть префиксы (/ro/catalog).
+ * Адрес страницы на языке: localePath('ro', '/catalog') → '/ro/catalog',
+ * localePath('en', '/catalog') → '/catalog' (у основного языка префикса нет).
  */
-export function localePath(_lang: Lang, path: string) {
-  return path === '' ? '/' : path.startsWith('/') ? path : `/${path}`
+export function localePath(lang: Lang, path: string) {
+  const p = path === '' ? '/' : path.startsWith('/') ? path : `/${path}`
+  if (lang === DEFAULT_LANG) return p
+  return p === '/' ? `/${lang}` : p.startsWith('/?') ? `/${lang}${p.slice(1)}` : `/${lang}${p}`
 }
 
 /** Убирает префикс языка из адреса: '/ro/catalog' → '/catalog' */

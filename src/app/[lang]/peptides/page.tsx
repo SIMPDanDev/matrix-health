@@ -2,10 +2,12 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { IconArrow, IconCheck, IconShield } from '@/components/icons'
+import { JsonLd } from '@/components/json-ld'
 import { PageHead } from '@/components/page-head'
 import { btn, wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
-import { getShop, getShopPage } from '@/lib/shop'
+import { snippet } from '@/lib/seo'
+import { getShop, getShopPage, shopMeta } from '@/lib/shop'
 import { TONES } from '@/lib/tones'
 import type { PeptidesContent } from '@/lib/types'
 
@@ -14,9 +16,12 @@ const SLUG = 'peptides'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ t }, p] = await Promise.all([getI18n(), getShopPage<PeptidesContent>(SLUG)])
-  return { title: p ? `${p.titleStart} ${p.titleAccent}` : t.meta.peptides, description: p?.lead ?? t.meta.peptidesDescription }
+  return shopMeta('/peptides', {
+    title: p ? `${p.titleStart} ${p.titleAccent}` : t.meta.peptides,
+    description: snippet(p?.lead) ?? t.meta.peptidesDescription,
+    type: 'article',
+  })
 }
-
 
 export default async function PeptidesPage() {
   const [{ i18n, catalog }, p] = await Promise.all([getShop(), getShopPage<PeptidesContent>(SLUG)])
@@ -29,6 +34,15 @@ export default async function PeptidesPage() {
 
   return (
     <div className={`${wrap} pt-6 lg:pt-8`}>
+      {p.faq.length > 0 && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: p.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+          }}
+        />
+      )}
       <PageHead
         crumb={t.nav.peptides}
         title={

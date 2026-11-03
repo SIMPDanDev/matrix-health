@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { PageHead } from '@/components/page-head'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
-import { getShop } from '@/lib/shop'
+import { getShop, shopMeta } from '@/lib/shop'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n()
-  return { title: t.meta.delivery }
+  return shopMeta('/delivery', { title: t.meta.delivery, description: t.meta.deliveryDescription })
 }
 
 export default async function DeliveryPage() {

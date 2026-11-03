@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useI18n } from '@/i18n/client'
-import { LANG_COOKIE, LANG_NAMES, LOCALES, type Lang } from '@/i18n/config'
+import { LANG_COOKIE, LANG_NAMES, LOCALES, localePath, stripLocale, type Lang } from '@/i18n/config'
 import { IconDown } from './icons'
 import { SelectMenu } from './select-menu'
 
@@ -10,8 +10,8 @@ const OPTIONS = LOCALES.map((l) => ({ id: l, label: LANG_NAMES[l].short }))
 
 /**
  * Выбор языка: кнопка «EN ⌄», в списке — только два других языка.
- * Язык не пишется в адресе, а хранится в cookie на год. После выбора страница перезагружается
- * по тому же адресу — так весь сайт (и уже загруженные в браузер страницы) сразу на новом языке.
+ * Открывает ту же страницу на выбранном языке (/catalog → /ro/catalog) и запоминает выбор в cookie на год:
+ * по нему адреса без префикса потом сразу ведут на этот язык.
  */
 export function LangSwitcher({ align = 'right' }: { align?: 'left' | 'right' }) {
   const { lang, t } = useI18n()
@@ -20,7 +20,8 @@ export function LangSwitcher({ align = 'right' }: { align?: 'left' | 'right' }) 
   const switchTo = (next: Lang) => {
     setShown(next)
     document.cookie = `${LANG_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`
-    window.location.reload()
+    const { pathname, search, hash } = window.location
+    window.location.assign(localePath(next, stripLocale(pathname)) + search + hash)
   }
 
   return (

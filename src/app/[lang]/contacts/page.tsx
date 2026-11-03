@@ -4,11 +4,11 @@ import { PageHead } from '@/components/page-head'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { telHref } from '@/lib/format'
-import { getShop } from '@/lib/shop'
+import { getShop, shopMeta } from '@/lib/shop'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n()
-  return { title: t.meta.contacts }
+  return shopMeta('/contacts', { title: t.meta.contacts, description: t.meta.contactsDescription })
 }
 
 export default async function ContactsPage() {

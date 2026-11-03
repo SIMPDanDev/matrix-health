@@ -19,6 +19,13 @@ const ro: Dictionary = {
     peptides: 'Ce sunt peptidele',
     peptidesDescription: 'Ce sunt peptidele, cum funcționează, cum se folosesc și ce este important de știut înainte de a începe o cură.',
     consultationDescription: 'Specialistul vă ajută să alegeți peptidele, vă spune ce analize să faceți și vă însoțește pe durata curei.',
+    homeTitle: 'Peptide cu documente pentru fiecare lot în Moldova',
+    homeDescription: 'Peptide cu certificat de analiză pentru fiecare lot. Catalog, consultație cu specialistul și livrare în toată Moldova.',
+    aboutDescription: 'Cine suntem, cum alegem furnizorii și de ce fiecare lot are documente.',
+    contactsDescription: 'Telefon, mesagerii, adresă și program de lucru. Întrebați despre produse, prețuri și livrare în Moldova.',
+    deliveryDescription: 'Livrare în toată Moldova prin curierul magazinului, păstrarea peptidelor în timpul transportului și retur.',
+    privacyDescription: 'Cum colectăm, păstrăm și folosim datele personale ale vizitatorilor site-ului.',
+    productDescription: '{name} — {category}. Documente pentru fiecare lot, consultație cu specialistul și livrare în toată Moldova.',
   },
 
   nav: {

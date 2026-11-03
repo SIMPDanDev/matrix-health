@@ -4,12 +4,12 @@ import { PageHead } from '@/components/page-head'
 import { btn, wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { telHref } from '@/lib/format'
-import { getShop, getShopServices } from '@/lib/shop'
+import { getShop, getShopServices, shopMeta } from '@/lib/shop'
 import { ConsultationPlanner } from './consultation-planner'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n()
-  return { title: t.meta.consultation, description: t.meta.consultationDescription }
+  return shopMeta('/consultation', { title: t.meta.consultation, description: t.meta.consultationDescription })
 }
 
 export default async function ConsultationPage() {

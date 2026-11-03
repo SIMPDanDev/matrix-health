@@ -2,6 +2,7 @@ import 'server-only'
 import { getI18n } from '@/i18n/server'
 import { getCatalog, getPage, getProduct, getServices, getSettings } from './data'
 import { localizeCatalog, localizeCertificate, localizePage, localizeProduct, localizeService, localizeSettings } from './localize'
+import { pageMeta } from './seo'
 import type { Page } from './types'
 
 // Данные магазина на языке текущей страницы (/en, /ro, /ru).
@@ -38,4 +39,10 @@ export async function getShopProduct(slug: string) {
     certificates: data.certificates.map((c) => localizeCertificate(c, i18n.lang)),
     related: data.related.map((p) => localizeProduct(p, i18n.lang)),
   }
+}
+
+/** Метаданные страницы на языке посетителя: canonical, hreflang и превью — см. pageMeta в lib/seo.ts */
+export async function shopMeta(path: string, m: Omit<Parameters<typeof pageMeta>[2], 'siteName'>) {
+  const [{ lang }, settings] = await Promise.all([getI18n(), getSettings()])
+  return pageMeta(lang, path, { ...m, siteName: localizeSettings(settings, lang).store_name })
 }

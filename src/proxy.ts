@@ -1,35 +1,47 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { DEFAULT_LANG, LANG_COOKIE, hasLocale, matchLanguage, stripLocale } from '@/i18n/config'
+import { DEFAULT_LANG, LANG_COOKIE, hasLocale, localePath, matchLanguage, stripLocale } from '@/i18n/config'
 import { SUPABASE_KEY, SUPABASE_URL, isSupabaseConfigured } from '@/lib/supabase/env'
 
-// Язык не пишется в адресе: /catalog открывается на языке посетителя.
-// Внутри Next.js страницы лежат в app/[lang], поэтому адрес незаметно подменяется (rewrite):
-// /catalog → /ro/catalog. Посетитель видит /catalog, страницы остаются статичными.
+// Адреса: английский без префикса (/catalog), румынский и русский — /ro/catalog, /ru/catalog.
+// Страницы лежат в app/[lang], поэтому английский адрес незаметно подменяется (rewrite): /catalog → /en/catalog.
+// У каждого языка свой адрес — так Google видит и индексирует все три версии.
 
-const YEAR = 60 * 60 * 24 * 365
+// Поисковые роботы всегда получают страницу по адресу как есть, без перенаправлений по языку
+const BOT = /bot|crawl|spider|slurp|facebookexternalhit|embedly|preview|lighthouse|chrome-lighthouse/i
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname, search } = request.nextUrl
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return protectAdmin(request)
 
-  // Ссылки вида /ro/... — запоминаем язык и ведём на обычный адрес без префикса.
-  // Удобно для рекламы: ссылка /ro сразу откроет сайт на румынском.
   const first = pathname.split('/')[1]
-  if (hasLocale(first)) {
+
+  // /en/... — дубль английской версии: навсегда ведём на адрес без префикса
+  if (first === DEFAULT_LANG) {
     const url = request.nextUrl.clone()
     url.pathname = stripLocale(pathname)
-    const response = NextResponse.redirect(url) // 307: не кешируется браузером, cookie ставится каждый раз
-    response.cookies.set(LANG_COOKIE, first, { path: '/', maxAge: YEAR, sameSite: 'lax' })
-    return response
+    return NextResponse.redirect(url, 308)
   }
 
-  // Язык: выбранный раньше → язык браузера → английский
-  const saved = request.cookies.get(LANG_COOKIE)?.value
-  const lang = hasLocale(saved) ? saved : (matchLanguage(request.headers.get('accept-language')) ?? DEFAULT_LANG)
+  // /ro/..., /ru/... — страница на этом языке как есть
+  if (hasLocale(first)) return NextResponse.next()
+
+  // Адрес без префикса. Посетителя, который выбрал другой язык (cookie), ведём на его версию.
+  // Язык браузера учитываем только на главной — остальные адреса открываются как есть,
+  // нужный язык из поиска подскажет Google по hreflang.
+  if (!BOT.test(request.headers.get('user-agent') ?? '')) {
+    const saved = request.cookies.get(LANG_COOKIE)?.value
+    const lang = hasLocale(saved) ? saved : pathname === '/' ? matchLanguage(request.headers.get('accept-language')) : null
+    if (lang && lang !== DEFAULT_LANG) {
+      const url = request.nextUrl.clone()
+      url.pathname = localePath(lang, pathname)
+      url.search = search
+      return NextResponse.redirect(url) // 307: зависит от посетителя, браузер не запоминает
+    }
+  }
 
   const url = request.nextUrl.clone()
-  url.pathname = `/${lang}${pathname === '/' ? '' : pathname}`
+  url.pathname = `/${DEFAULT_LANG}${pathname === '/' ? '' : pathname}`
   return NextResponse.rewrite(url)
 }
 

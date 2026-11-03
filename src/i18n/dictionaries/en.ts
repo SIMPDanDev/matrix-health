@@ -21,6 +21,13 @@ const en = {
     peptides: 'What are peptides',
     peptidesDescription: 'What peptides are, how they work, how they are used and what is important to know before starting a course.',
     consultationDescription: 'A specialist will help you choose peptides, tell you which tests to take and guide you through the course.',
+    homeTitle: 'Peptides with documents for every batch in Moldova',
+    homeDescription: 'Peptides with a certificate of analysis for every batch. Catalog, specialist consultation and delivery across Moldova.',
+    aboutDescription: 'Who we are, how we choose suppliers and why every batch comes with documents.',
+    contactsDescription: 'Phone, messengers, address and business hours. Ask about products, prices and delivery in Moldova.',
+    deliveryDescription: 'Delivery across Moldova by the store courier, storage of peptides in transit and returns.',
+    privacyDescription: 'How we collect, store and use personal data of website visitors.',
+    productDescription: '{name} — {category}. Documents for every batch, specialist consultation and delivery across Moldova.',
   },
 
   nav: {

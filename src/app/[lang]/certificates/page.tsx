@@ -7,12 +7,12 @@ import { LotSearch } from '@/components/lot-search'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { telHref } from '@/lib/format'
-import { getShop } from '@/lib/shop'
+import { getShop, shopMeta } from '@/lib/shop'
 import type { Certificate } from '@/lib/types'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n()
-  return { title: t.meta.certificates, description: t.meta.certificatesDescription }
+  return shopMeta('/certificates', { title: t.meta.certificates, description: t.meta.certificatesDescription })
 }
 
 export default async function CertificatesPage(props: PageProps<'/[lang]/certificates'>) {

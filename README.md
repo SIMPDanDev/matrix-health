@@ -42,8 +42,9 @@ It runs in three languages and has a full admin panel. New orders and consultati
 - **Specialist services**: a one-time peptide consultation and monthly course support, with a request form.
 - **"What are peptides"** page: a short, factual explainer that links to products in the catalog.
 - **Three languages**: English (default), Romanian and Russian.
-  - The language is not part of the URL, it is remembered in a cookie.
-  - On the first visit it is detected from the browser.
+  - Each language has its own URLs: English without a prefix (`/catalog`), Romanian and Russian with one (`/ro/catalog`, `/ru/catalog`).
+  - On the home page the language is detected from the browser; a language picked in the switcher is remembered.
+- **SEO**: canonical and hreflang links on every page, `sitemap.xml` with all three languages, `robots.txt`, Open Graph previews, and schema.org markup (organization, breadcrumbs, products, FAQ).
 - **Fully responsive**, from 390 px phones to wide desktops.
 
 ### Admin panel (`/admin`, in Russian)
@@ -154,7 +155,7 @@ The checkout only promises an email copy once mail is configured. Gmail allows a
 
 ```
 src/
-  app/[lang]/          storefront pages (language comes from a cookie, not the URL)
+  app/[lang]/          storefront pages (/ for English, /ro and /ru)
   app/admin/           admin panel: login and (panel) pages
   components/          storefront UI; components/admin: admin forms
   i18n/                dictionaries (en, ro, ru) and language helpers
@@ -164,7 +165,7 @@ src/
   lib/telegram.ts      Telegram notifications
   lib/mail.ts          order emails via Gmail
   lib/admin/           admin auth, server actions, page editor schemas
-  proxy.ts             language detection and /admin protection
+  proxy.ts             language URLs and redirects, /admin protection
 supabase/              SQL for the database (see the table above)
 docs/screenshots/      images for this README
 ```
