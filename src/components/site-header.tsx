@@ -38,7 +38,7 @@ export async function SiteHeader() {
       <div className="bg-brand text-[13px] text-white">
         <div className={`${wrap} flex h-9 items-center justify-between gap-6`}>
           <p className="flex min-w-0 items-center gap-5">
-            {settings.free_delivery_from > 0 && (
+            {settings.sales_enabled && settings.free_delivery_from > 0 && (
               <span className="flex items-center gap-1.5 truncate">
                 <IconTruck size={15} className="shrink-0 text-accent" />{' '}
                 {i18n.fmt(t.header.freeDelivery, { price: money(settings.free_delivery_from) })}
@@ -97,7 +97,7 @@ export async function SiteHeader() {
             </Suspense>
           </div>
 
-          <CartLink />
+          {settings.sales_enabled && <CartLink />}
           <MobileMenu
             items={mobileNav}
             phone={settings.phone}

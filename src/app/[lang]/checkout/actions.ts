@@ -66,11 +66,14 @@ export async function placeOrder(_prev: CheckoutState, fd: FormData): Promise<Ch
   if (!items.length) return { error: 'cartEmpty' }
 
   if (!isSupabaseConfigured) return { error: 'notConnected' }
+  // Режим витрины: заказы не принимаются (база тоже не пропустит — supabase/showcase.sql)
+  if (!(await getSettings()).sales_enabled) return { error: 'closed' }
 
   const { data, error } = await createPublicClient().rpc('place_order', { p_customer: customer, p_items: items })
 
   if (error) {
     // Тексты ошибок place_order — на русском; переводим известные в коды
+    if (/Продажи/i.test(error.message)) return { error: 'closed' }
     if (/недоступ/i.test(error.message)) return { error: 'unavailable' }
     if (/Недостаточно/i.test(error.message)) return { error: 'stock' }
     if (/Корзина/i.test(error.message)) return { error: 'cartEmpty' }

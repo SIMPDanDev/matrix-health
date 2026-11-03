@@ -1,5 +1,6 @@
 import { RefreshSiteButton } from '@/components/admin/controls'
 import { AdminTitle, Card } from '@/components/admin/parts'
+import { SalesToggle } from '@/components/admin/sales-toggle'
 import { SettingsForm } from '@/components/admin/settings-form'
 import { MailTest } from '@/components/admin/mail-test'
 import { TelegramBot } from '@/components/admin/telegram-bot'
@@ -16,7 +17,12 @@ export default async function SettingsPage() {
   const [{ data }, username] = await Promise.all([sb.from('settings').select('*').eq('id', 1).maybeSingle(), botUsername()])
 
   const settings: Settings = data
-    ? { ...(data as Settings), delivery_cost: Number(data.delivery_cost), free_delivery_from: Number(data.free_delivery_from) }
+    ? {
+        ...(data as Settings),
+        delivery_cost: Number(data.delivery_cost),
+        free_delivery_from: Number(data.free_delivery_from),
+        sales_enabled: data.sales_enabled !== false,
+      }
     : EMPTY_SETTINGS
 
   return (
@@ -28,6 +34,10 @@ export default async function SettingsPage() {
         Правили товары или настройки напрямую в Supabase? Нажмите «Обновить сайт» — иначе изменения появятся примерно
         через минуту.
       </p>
+      <Card title="Продажи на сайте" className="mb-6 max-w-4xl">
+        <SalesToggle enabled={settings.sales_enabled} installed={Boolean(data && 'sales_enabled' in data)} />
+      </Card>
+
       <SettingsForm settings={settings} />
 
       <Card title="Telegram-бот: уведомления о заказах и заявках" className="mt-6 max-w-4xl">

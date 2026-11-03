@@ -99,6 +99,8 @@ export type Settings = {
   free_delivery_from: number
   delivery_info: string | null
   payment_info: string | null
+  /** false — режим витрины: без цен, корзины и заказов (supabase/showcase.sql) */
+  sales_enabled: boolean
   translations?: Translations<SettingsText>
 }
 

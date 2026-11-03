@@ -27,6 +27,8 @@ export const EMPTY_SETTINGS: Settings = {
   free_delivery_from: 0,
   delivery_info: null,
   payment_info: null,
+  // Пока не запущен supabase/showcase.sql, поля нет — магазин продаёт как раньше
+  sales_enabled: true,
 }
 
 const num = (v: unknown) => (v === null || v === undefined || v === '' ? 0 : Number(v))
@@ -111,6 +113,7 @@ export async function getSettings(): Promise<Settings> {
     ...Object.fromEntries(Object.entries(data).filter(([, v]) => v !== null && v !== '')),
     delivery_cost: num(data.delivery_cost),
     free_delivery_from: num(data.free_delivery_from),
+    sales_enabled: data.sales_enabled !== false,
   } as Settings
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { SalesClosed } from '@/components/sales-closed'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { getCatalog, getSettings } from '@/lib/data'
@@ -24,7 +25,7 @@ export default async function CartPage() {
     <div className={`${wrap} pt-6 lg:pt-8`}>
       <Breadcrumbs items={[{ label: t.cart.title }]} />
       <h1 className="mt-5 mb-10 text-[clamp(2rem,4.5vw,3.25rem)] leading-none font-bold tracking-[-0.035em]">{t.cart.title}</h1>
-      <CartView deliveryCost={s.delivery_cost} freeFrom={s.free_delivery_from} stock={stock} />
+      {!s.sales_enabled ? <SalesClosed /> : <CartView deliveryCost={s.delivery_cost} freeFrom={s.free_delivery_from} stock={stock} />}
     </div>
   )
 }

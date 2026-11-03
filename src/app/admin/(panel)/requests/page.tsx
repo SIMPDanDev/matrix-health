@@ -66,7 +66,7 @@ export default async function RequestsPage(props: PageProps<'/admin/requests'>) 
 
   return (
     <>
-      <AdminTitle title="Заявки" sub={`На консультацию и сопровождение · всего: ${counts.data?.length ?? 0}`}>
+      <AdminTitle title="Заявки" sub={`На консультацию, сопровождение и старт продаж · всего: ${counts.data?.length ?? 0}`}>
         <Link href="/admin/services" className="inline-flex h-9 items-center rounded-md border border-line bg-surface px-3.5 text-sm font-medium hover:border-ink">
           Услуги и цены
         </Link>

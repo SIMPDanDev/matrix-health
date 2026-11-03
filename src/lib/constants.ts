@@ -9,6 +9,9 @@ export const SORTS = [
 
 export type SortId = (typeof SORTS)[number]['id']
 
+/** Сортировки по цене — в режиме витрины их нет */
+export const PRICE_SORTS: readonly SortId[] = ['cheap', 'expensive']
+
 export const DOC_TYPES = ['COA', 'HPLC', 'Соответствие', 'Другое'] as const
 
 export const ORDER_STATUSES = [

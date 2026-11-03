@@ -129,6 +129,8 @@ export type RequestNotice = {
   adminUrl: string | null
   lang: string
   service: { name: string; price: number | null; period: 'once' | 'month' } | null
+  /** Заявка «Сообщить о старте продаж» со страницы товара (режим витрины) */
+  product?: string | null
   customer: { name: string; phone: string; contact: string; comment: string }
 }
 
@@ -138,7 +140,8 @@ export function requestMessage(r: RequestNotice) {
   const c = r.customer
 
   return [
-    `🩺 <b>Заявка на консультацию №${orderNo(r.number)}</b>`,
+    r.product ? `🔔 <b>Ждёт старта продаж №${orderNo(r.number)}</b>` : `🩺 <b>Заявка на консультацию №${orderNo(r.number)}</b>`,
+    r.product && block('📦 <b>Товар</b>', esc(r.product)),
     s && block('📋 <b>Услуга</b>', `${esc(s.name)} — ${price}`),
     block(
       '👤 <b>Клиент</b>',
@@ -147,7 +150,7 @@ export function requestMessage(r: RequestNotice) {
       line('Как связаться', CONTACT_LABELS[c.contact] ?? c.contact),
       line('Язык сайта', LANG_NAMES[r.lang]),
     ),
-    block('🎯 <b>Цель клиента</b>', c.comment ? `<i>${esc(c.comment)}</i>` : 'не указана'),
+    !r.product && block('🎯 <b>Цель клиента</b>', c.comment ? `<i>${esc(c.comment)}</i>` : 'не указана'),
     r.adminUrl && `<a href="${r.adminUrl}">Открыть заявки в админке</a>`,
   ]
     .filter(Boolean)

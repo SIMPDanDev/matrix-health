@@ -105,6 +105,7 @@ Create a project at [supabase.com](https://supabase.com). Then run these files i
 | `supabase/order-stock.sql` | Returns items to stock when an order is cancelled |
 | `supabase/order-numbers.sql` | Order and request numbers like `0001` |
 | `supabase/stock-check.sql` | Orders cannot exceed the stock |
+| `supabase/showcase.sql` | Showcase mode: no prices, cart or orders until sales are switched on in Admin → Settings |
 
 Every file is safe to run again.
 

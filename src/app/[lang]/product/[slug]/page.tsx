@@ -8,6 +8,7 @@ import { DocRow } from '@/components/doc-row'
 import { IconShield, IconSnow, IconTruck } from '@/components/icons'
 import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
+import { ShowcaseBox } from '@/components/showcase-box'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { filterName } from '@/lib/filters'
@@ -93,7 +94,7 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
           </p>
 
           <div className="mt-6">
-            <BuyBox product={p} />
+            {settings.sales_enabled ? <BuyBox product={p} /> : <ShowcaseBox productId={p.id} hours={settings.working_hours} />}
           </div>
 
           <ul className="mt-5 grid gap-3 text-sm text-ink-2 sm:grid-cols-3">
@@ -101,7 +102,7 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
               <IconShield size={18} className="mt-px shrink-0 text-brand" />
               {certificates.length ? plural(certificates.length, t.product.docsCount) : t.product.docsOnRequest}
             </li>
-            {settings.free_delivery_from > 0 && (
+            {settings.sales_enabled && settings.free_delivery_from > 0 && (
               <li className="flex items-start gap-2">
                 <IconTruck size={18} className="mt-px shrink-0 text-brand" />
                 {fmt(t.product.freeFrom, { price: money(settings.free_delivery_from) })}

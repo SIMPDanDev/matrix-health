@@ -212,6 +212,19 @@ const en = {
     fileOnRequest: 'File on request',
   },
 
+  showcase: {
+    soon: 'Coming soon',
+    more: 'Details',
+    title: 'Sales start soon',
+    text: 'This product is not available to order yet. Leave your contacts and we will let you know as soon as sales start.',
+    submit: 'Notify me',
+    successTitle: 'Thank you!',
+    successText: 'We will contact you as soon as sales start{hours}.',
+    unavailable: 'This product is no longer available. Refresh the page.',
+    closedTitle: 'Sales have not started yet',
+    closedText: 'Products cannot be ordered on the website yet. Open a product page and leave your contacts — we will let you know when sales start.',
+  },
+
   catalog: {
     title: 'Catalog',
     items: { one: '{n} product', other: '{n} products' } as PluralForms,
@@ -348,6 +361,7 @@ const en = {
       failed: 'We could not place the order. Call us and we will take it by phone.',
       unavailable: 'One of the products is no longer available. Remove it from the cart and try again.',
       stock: 'There is less in stock than in your cart. Open the cart, the quantity has been adjusted.',
+      closed: 'Orders are not being accepted on the website yet.',
     },
     courierNote: 'Your order will be delivered by our courier. The manager will call to agree on a convenient time.',
   },

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getI18n } from '@/i18n/server'
 import { displayPrice, inStock } from '@/lib/catalog'
+import { getSettings } from '@/lib/data'
 import { tone } from '@/lib/tones'
 import type { Product } from '@/lib/types'
 import { QuickAdd } from './add-to-cart'
@@ -8,7 +9,7 @@ import { IconArrow, IconShield } from './icons'
 import { ProductVisual } from './product-visual'
 
 export async function ProductCard({ product, hasDocs }: { product: Product; hasDocs?: boolean }) {
-  const { t, path, money, fmt } = await getI18n()
+  const [{ t, path, money, fmt }, settings] = await Promise.all([getI18n(), getSettings()])
   const price = displayPrice(product)
   const available = inStock(product)
   const c = tone(product.category?.sort)
@@ -32,7 +33,7 @@ export async function ProductCard({ product, hasDocs }: { product: Product; hasD
 
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2 text-xs font-semibold">
           {product.is_new ? <span className="rounded-full bg-white px-2.5 py-1 text-ink">{t.product.new}</span> : <span />}
-          {discount > 0 && <span className="rounded-full bg-signal px-2.5 py-1 text-white tabular-nums">−{discount}%</span>}
+          {settings.sales_enabled && discount > 0 && <span className="rounded-full bg-signal px-2.5 py-1 text-white tabular-nums">−{discount}%</span>}
         </div>
 
         {!available && (
@@ -58,46 +59,61 @@ export async function ProductCard({ product, hasDocs }: { product: Product; hasD
           )}
         </p>
 
-        <div className="mt-auto flex items-end justify-between gap-2 pt-4">
-          <div className="flex flex-col leading-tight">
-            {product.old_price && product.old_price > price && (
-              <span className="text-[13px] text-mute line-through tabular-nums">{money(product.old_price)}</span>
-            )}
-            <span className="text-[17px] font-bold whitespace-nowrap tabular-nums sm:text-lg">
-              {product.variants.length > 1 && <span className="text-sm font-normal text-mute">{t.product.from} </span>}
-              {money(price)}
-            </span>
+        {!settings.sales_enabled ? (
+          // Режим витрины: без цены и корзины
+          <div className="mt-auto flex items-center justify-between gap-2 pt-4">
+            <span className="text-[15px] font-semibold text-ink-2">{t.showcase.soon}</span>
+            <Link
+              href={href}
+              aria-label={`${t.showcase.more}: ${product.name}`}
+              className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line-strong text-sm font-medium hover:border-brand hover:text-brand sm:h-10 sm:w-auto sm:px-4"
+            >
+              <IconArrow size={18} className="sm:hidden" />
+              <span className="hidden sm:inline">{t.showcase.more}</span>
+            </Link>
           </div>
+        ) : (
+          <div className="mt-auto flex items-end justify-between gap-2 pt-4">
+            <div className="flex flex-col leading-tight">
+              {product.old_price && product.old_price > price && (
+                <span className="text-[13px] text-mute line-through tabular-nums">{money(product.old_price)}</span>
+              )}
+              <span className="text-[17px] font-bold whitespace-nowrap tabular-nums sm:text-lg">
+                {product.variants.length > 1 && <span className="text-sm font-normal text-mute">{t.product.from} </span>}
+                {money(price)}
+              </span>
+            </div>
 
-          {available &&
-            (product.variants.length > 1 ? (
-              <Link
-                href={href}
-                aria-label={fmt(t.product.chooseAria, { name: product.name })}
-                className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line-strong text-sm font-medium hover:border-brand hover:text-brand sm:h-10 sm:w-auto sm:px-4"
-              >
-                <IconArrow size={18} className="sm:hidden" />
-                <span className="hidden sm:inline">{t.product.choose}</span>
-              </Link>
-            ) : (
-              <QuickAdd
-                name={product.name}
-                line={{
-                  productId: product.id,
-                  variantId: product.variants[0]?.id ?? null,
-                  variantLabel: product.variants[0]?.label ?? null,
-                  slug: product.slug,
-                  name: product.name,
-                  price,
-                  image: product.images[0] ?? null,
-                  form: product.form,
-                  tone: product.category?.sort ?? null,
-                  pack: product.pack,
-                  stock: product.variants[0]?.stock ?? product.stock,
-                }}
-              />
-            ))}
-        </div>
+            {available &&
+              (product.variants.length > 1 ? (
+                <Link
+                  href={href}
+                  aria-label={fmt(t.product.chooseAria, { name: product.name })}
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line-strong text-sm font-medium hover:border-brand hover:text-brand sm:h-10 sm:w-auto sm:px-4"
+                >
+                  <IconArrow size={18} className="sm:hidden" />
+                  <span className="hidden sm:inline">{t.product.choose}</span>
+                </Link>
+              ) : (
+                <QuickAdd
+                  name={product.name}
+                  line={{
+                    productId: product.id,
+                    variantId: product.variants[0]?.id ?? null,
+                    variantLabel: product.variants[0]?.label ?? null,
+                    slug: product.slug,
+                    name: product.name,
+                    price,
+                    image: product.images[0] ?? null,
+                    form: product.form,
+                    tone: product.category?.sort ?? null,
+                    pack: product.pack,
+                    stock: product.variants[0]?.stock ?? product.stock,
+                  }}
+                />
+              ))}
+          </div>
+        )}
       </div>
     </article>
   )

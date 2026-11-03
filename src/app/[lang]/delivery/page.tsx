@@ -16,7 +16,8 @@ export default async function DeliveryPage() {
   const paid = s.free_delivery_from > 0 ? fmt(d.price, { cost: money(s.delivery_cost), free: money(s.free_delivery_from) }) : money(s.delivery_cost)
 
   // Доставляет только курьер магазина
-  const methods = [{ title: d.courierTitle, time: d.courierTime, price: paid, text: d.courierText }]
+  // В режиме витрины без стоимости доставки и способов оплаты
+  const methods = [{ title: d.courierTitle, time: d.courierTime, price: s.sales_enabled ? paid : null, text: d.courierText }]
 
   return (
     <div className={`${wrap} pt-6 lg:pt-8`}>
@@ -30,7 +31,8 @@ export default async function DeliveryPage() {
               <div>
                 <p className="text-lg font-medium">{m.title}</p>
                 <p className="mt-1 text-sm text-mute">
-                  {m.time} · {m.price}
+                  {m.time}
+                  {m.price && ` · ${m.price}`}
                 </p>
               </div>
               <p className="leading-relaxed text-ink-2">{m.text}</p>
@@ -47,21 +49,23 @@ export default async function DeliveryPage() {
         </div>
       </section>
 
-      <section className="grid gap-10 border-t border-line py-14 lg:grid-cols-[260px_1fr] lg:gap-16">
-        <h2 className="text-2xl font-semibold tracking-[-0.02em]">{d.paymentTitle}</h2>
-        <div className="max-w-2xl">
-          {s.payment_info ? (
-            <p className="text-[17px] leading-relaxed whitespace-pre-line text-ink-2">{s.payment_info}</p>
-          ) : (
-            <ul className="space-y-3 text-[17px] text-ink-2">
-              {d.payment.map((line) => (
-                <li key={line}>— {line}</li>
-              ))}
-            </ul>
-          )}
-          {s.delivery_info && <p className="mt-6 leading-relaxed whitespace-pre-line text-ink-2">{s.delivery_info}</p>}
-        </div>
-      </section>
+      {s.sales_enabled && (
+        <section className="grid gap-10 border-t border-line py-14 lg:grid-cols-[260px_1fr] lg:gap-16">
+          <h2 className="text-2xl font-semibold tracking-[-0.02em]">{d.paymentTitle}</h2>
+          <div className="max-w-2xl">
+            {s.payment_info ? (
+              <p className="text-[17px] leading-relaxed whitespace-pre-line text-ink-2">{s.payment_info}</p>
+            ) : (
+              <ul className="space-y-3 text-[17px] text-ink-2">
+                {d.payment.map((line) => (
+                  <li key={line}>— {line}</li>
+                ))}
+              </ul>
+            )}
+            {s.delivery_info && <p className="mt-6 leading-relaxed whitespace-pre-line text-ink-2">{s.delivery_info}</p>}
+          </div>
+        </section>
+      )}
 
       <section className="grid gap-10 border-t border-line py-14 lg:grid-cols-[260px_1fr] lg:gap-16">
         <h2 className="text-2xl font-semibold tracking-[-0.02em]">{d.returnsTitle}</h2>

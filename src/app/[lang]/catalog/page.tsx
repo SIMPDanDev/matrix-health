@@ -9,6 +9,7 @@ import { btn, wrap } from '@/components/ui'
 import { applyFilters, catalogHref, displayPrice, parseFilters, type Filters } from '@/lib/catalog'
 import { getI18n } from '@/i18n/server'
 import type { Lang } from '@/i18n/config'
+import { PRICE_SORTS } from '@/lib/constants'
 import { getShop } from '@/lib/shop'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,8 +28,12 @@ export default function CatalogPage(props: PageProps<'/[lang]/catalog'>) {
 }
 
 async function CatalogView({ searchParams }: Pick<PageProps<'/[lang]/catalog'>, 'searchParams'>) {
-  const filters = parseFilters(await searchParams)
-  const { i18n, catalog } = await getShop()
+  const { i18n, catalog, settings } = await getShop()
+  const parsed = parseFilters(await searchParams)
+  // В режиме витрины цен на сайте нет — фильтр и сортировка по цене не работают
+  const filters: Filters = settings.sales_enabled
+    ? parsed
+    : { ...parsed, min: null, max: null, sort: PRICE_SORTS.includes(parsed.sort) ? 'popular' : parsed.sort }
   const { t, lang, path, plural, fmt } = i18n
   const { products, categories, certificates } = catalog
 
@@ -42,8 +47,8 @@ async function CatalogView({ searchParams }: Pick<PageProps<'/[lang]/catalog'>, 
   const facets = {
     forms: countBy(scopeAll.map((p) => [p.form])),
     purposes: countBy(scopeAll.map((p) => p.purposes)),
-    minPrice: scopeAll.length ? Math.floor(Math.min(...scopeAll.map(displayPrice))) : 0,
-    maxPrice: scopeAll.length ? Math.ceil(Math.max(...scopeAll.map(displayPrice))) : 0,
+    minPrice: settings.sales_enabled && scopeAll.length ? Math.floor(Math.min(...scopeAll.map(displayPrice))) : 0,
+    maxPrice: settings.sales_enabled && scopeAll.length ? Math.ceil(Math.max(...scopeAll.map(displayPrice))) : 0,
   }
 
   // Варианты фильтров из Админка → Фильтры; скрытые там не показываем
@@ -86,6 +91,7 @@ async function CatalogView({ searchParams }: Pick<PageProps<'/[lang]/catalog'>, 
         facets={facets}
         options={options}
         total={result.total}
+        prices={settings.sales_enabled}
         footer={
           result.items.length > 0 && (
             <Pagination lang={lang} labels={{ pages: t.catalog.pages, next: t.catalog.nextPage }} filters={filters} page={result.page} pages={result.pages} />

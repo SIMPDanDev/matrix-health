@@ -64,6 +64,8 @@ function dbError(message: string) {
     return 'В базе нет таблиц для услуг. Выполните supabase/services.sql в Supabase → SQL Editor.'
   if (/filter_options/i.test(message) && /does not exist|schema cache/i.test(message))
     return 'В базе нет таблицы фильтров. Выполните supabase/filters.sql в Supabase → SQL Editor.'
+  if (/sales_enabled/i.test(message))
+    return 'В базе нет переключателя продаж. Выполните supabase/showcase.sql в Supabase → SQL Editor.'
   if (/translations/i.test(message)) return 'В базе нет поля для переводов. Выполните supabase/i18n.sql в Supabase → SQL Editor.'
   if (/duplicate key.*slug/i.test(message)) return 'Такой адрес (slug) уже занят — измените его.'
   if (/row-level security/i.test(message)) return 'Нет прав. Проверьте, что ваш пользователь добавлен в таблицу admins.'
@@ -546,4 +548,20 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
   updateTag(SETTINGS_TAG)
   refresh()
   return { ok: true, message: 'Настройки сохранены — сайт уже обновился' }
+}
+
+/** Продажи на сайте: включены — цены, корзина и заказы; выключены — режим витрины */
+export async function setSalesEnabled(_prev: FormState, fd: FormData): Promise<FormState> {
+  const { sb } = await requireAdmin()
+  const enabled = fd.get('enabled') === '1'
+
+  const { error } = await sb.from('settings').update({ sales_enabled: enabled }).eq('id', 1)
+  if (error) return { error: dbError(error.message) }
+
+  updateTag(SETTINGS_TAG)
+  refresh()
+  return {
+    ok: true,
+    message: enabled ? 'Продажи включены: цены, корзина и заказы уже на сайте' : 'Включён режим витрины: цены и корзина скрыты',
+  }
 }

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useTransition, type ReactNode } from 'react'
 import { useI18n } from '@/i18n/client'
 import { catalogHref, type Filters } from '@/lib/catalog'
-import { SORTS, type SortId } from '@/lib/constants'
+import { PRICE_SORTS, SORTS, type SortId } from '@/lib/constants'
 import { IconClose, IconSettings } from './icons'
 import { SelectMenu } from './select-menu'
 import { checkbox, input } from './ui'
@@ -20,6 +20,7 @@ export function CatalogControls({
   facets,
   options,
   total,
+  prices = true,
   children,
   footer,
 }: {
@@ -27,6 +28,8 @@ export function CatalogControls({
   facets: Facets
   options: { forms: FilterChoice[]; purposes: FilterChoice[] }
   total: number
+  /** false — режим витрины: без фильтра и сортировки по цене */
+  prices?: boolean
   children: ReactNode
   /** Под сеткой товаров (страницы). Отдельной строкой — чтобы липкие фильтры останавливались на последнем ряду товаров */
   footer?: ReactNode
@@ -88,15 +91,17 @@ export function CatalogControls({
         ))}
       </FilterGroup>
 
-      <FilterGroup title={t.catalog.price}>
-        <PriceRange
-          key={`${filters.min}-${filters.max}`}
-          min={filters.min}
-          max={filters.max}
-          labels={{ from: t.catalog.priceFrom, to: t.catalog.priceTo, phFrom: fmt(t.catalog.placeholderFrom, { n: facets.minPrice }), phTo: fmt(t.catalog.placeholderTo, { n: facets.maxPrice }) }}
-          onApply={(min, max) => go({ min, max })}
-        />
-      </FilterGroup>
+      {prices && (
+        <FilterGroup title={t.catalog.price}>
+          <PriceRange
+            key={`${filters.min}-${filters.max}`}
+            min={filters.min}
+            max={filters.max}
+            labels={{ from: t.catalog.priceFrom, to: t.catalog.priceTo, phFrom: fmt(t.catalog.placeholderFrom, { n: facets.minPrice }), phTo: fmt(t.catalog.placeholderTo, { n: facets.maxPrice }) }}
+            onApply={(min, max) => go({ min, max })}
+          />
+        </FilterGroup>
+      )}
 
       <label className="flex cursor-pointer items-center justify-between gap-3 border-t border-line pt-6 text-[15px] font-medium">
         {t.catalog.inStockOnly}
@@ -160,7 +165,7 @@ export function CatalogControls({
         <SelectMenu<SortId>
           label={t.catalog.sort}
           value={filters.sort}
-          options={SORTS.map((x) => ({ id: x.id, label: t.sorts[x.id] }))}
+          options={SORTS.filter((x) => prices || !PRICE_SORTS.includes(x.id)).map((x) => ({ id: x.id, label: t.sorts[x.id] }))}
           onChange={(sort) => go({ sort })}
         />
       </div>

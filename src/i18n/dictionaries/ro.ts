@@ -215,6 +215,19 @@ const ro: Dictionary = {
     fileOnRequest: 'Fișier la cerere',
   },
 
+  showcase: {
+    soon: 'În curând în vânzare',
+    more: 'Detalii',
+    title: 'Vânzările încep în curând',
+    text: 'Acest produs nu poate fi comandat încă. Lăsați datele de contact și vă anunțăm imediat ce încep vânzările.',
+    submit: 'Anunțați-mă',
+    successTitle: 'Vă mulțumim!',
+    successText: 'Vă vom contacta imediat ce încep vânzările{hours}.',
+    unavailable: 'Acest produs nu mai este disponibil. Reîncărcați pagina.',
+    closedTitle: 'Vânzările nu au început încă',
+    closedText: 'Deocamdată produsele nu pot fi comandate pe site. Deschideți pagina produsului și lăsați datele de contact — vă anunțăm când încep vânzările.',
+  },
+
   catalog: {
     title: 'Catalog',
     items: { one: '{n} produs', few: '{n} produse', other: '{n} de produse' },
@@ -352,6 +365,7 @@ const ro: Dictionary = {
       failed: 'Comanda nu a putut fi plasată. Sunați-ne și o preluăm la telefon.',
       unavailable: 'Unul dintre produse nu mai este disponibil. Eliminați-l din coș și încercați din nou.',
       stock: 'În stoc sunt mai puține produse decât în coș. Deschideți coșul, cantitatea a fost ajustată.',
+      closed: 'Deocamdată comenzile pe site nu sunt acceptate.',
     },
     courierNote: 'Comanda vă va fi adusă de curierul nostru. Managerul vă sună pentru a stabili ora potrivită.',
   },

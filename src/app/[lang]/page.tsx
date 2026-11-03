@@ -34,7 +34,7 @@ export default async function HomePage() {
     {
       icon: <IconTruck size={22} />,
       title: t.home.featureDeliveryTitle,
-      text: s.free_delivery_from > 0 ? fmt(t.home.featureDeliveryFree, { price: money(s.free_delivery_from) }) : t.home.featureDeliveryNext,
+      text: s.sales_enabled && s.free_delivery_from > 0 ? fmt(t.home.featureDeliveryFree, { price: money(s.free_delivery_from) }) : t.home.featureDeliveryNext,
     },
   ]
 
