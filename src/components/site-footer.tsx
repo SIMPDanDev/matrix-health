@@ -7,6 +7,9 @@ import { wrap } from './ui'
 export async function SiteFooter() {
   const { i18n, catalog, settings: s } = await getShop()
   const { t, path } = i18n
+  // На информационном сайте нет «Доставки» и «Контактов», а телефона, почты и адреса нет в настройках (getSettings)
+  const sales = s.sales_enabled
+  const hasContacts = Boolean(s.phone || s.email || s.address)
 
   return (
     <footer className="mt-24 bg-brand-dark text-white">
@@ -31,20 +34,22 @@ export async function SiteFooter() {
           <Link href={path('/peptides')}>{t.nav.peptides}</Link>
           <Link href={path('/consultation')}>{t.nav.consultation}</Link>
           <Link href={path('/certificates')}>{t.nav.certificates}</Link>
-          <Link href={path('/delivery')}>{t.nav.deliveryFull}</Link>
+          {sales && <Link href={path('/delivery')}>{t.nav.deliveryFull}</Link>}
           <Link href={path('/about')}>{t.nav.about}</Link>
-          <Link href={path('/contacts')}>{t.nav.contacts}</Link>
+          {sales && <Link href={path('/contacts')}>{t.nav.contacts}</Link>}
         </FooterCol>
 
-        <FooterCol title={t.footer.contact}>
-          {s.phone && (
-            <a href={telHref(s.phone)} className="text-lg font-semibold whitespace-nowrap text-white tabular-nums">
-              {s.phone}
-            </a>
-          )}
-          {s.email && <a href={`mailto:${s.email}`}>{s.email}</a>}
-          {s.address && <span className="text-white/60">{s.address}</span>}
-        </FooterCol>
+        {hasContacts && (
+          <FooterCol title={t.footer.contact}>
+            {s.phone && (
+              <a href={telHref(s.phone)} className="text-lg font-semibold whitespace-nowrap text-white tabular-nums">
+                {s.phone}
+              </a>
+            )}
+            {s.email && <a href={`mailto:${s.email}`}>{s.email}</a>}
+            {s.address && <span className="text-white/60">{s.address}</span>}
+          </FooterCol>
+        )}
       </div>
 
       <div className="border-t border-white/10">

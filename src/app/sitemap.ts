@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { LOCALES } from '@/i18n/config'
-import { getCatalog, getPage } from '@/lib/data'
+import { getCatalog, getPage, getSettings } from '@/lib/data'
 import { SITE_URL, absoluteUrl, languageAlternates } from '@/lib/seo'
 
 // Карта сайта для Google: каждая страница на трёх языках, у каждой — ссылки на остальные версии (hreflang).
@@ -9,7 +9,9 @@ import { SITE_URL, absoluteUrl, languageAlternates } from '@/lib/seo'
 type Entry = { path: string; lastModified?: string; priority: number; changeFrequency: 'daily' | 'weekly' | 'monthly' | 'yearly' }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [{ products, categories }, peptides] = await Promise.all([getCatalog(), getPage('peptides')])
+  const [{ products, categories }, peptides, settings] = await Promise.all([getCatalog(), getPage('peptides'), getSettings()])
+  // На информационном сайте нет страниц «Доставка» и «Контакты»
+  const sales = settings.sales_enabled
   // Пустые категории на сайте не показываются — и в карту их не кладём
   const used = categories.filter((c) => products.some((p) => p.category_id === c.id))
 
@@ -21,9 +23,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(peptides ? [{ path: '/peptides', lastModified: peptides.updated_at, priority: 0.7, changeFrequency: 'monthly' } as Entry] : []),
     { path: '/consultation', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/certificates', priority: 0.6, changeFrequency: 'weekly' },
-    { path: '/delivery', priority: 0.5, changeFrequency: 'monthly' },
+    ...(sales ? [{ path: '/delivery', priority: 0.5, changeFrequency: 'monthly' } as Entry] : []),
     { path: '/about', priority: 0.5, changeFrequency: 'monthly' },
-    { path: '/contacts', priority: 0.5, changeFrequency: 'monthly' },
+    ...(sales ? [{ path: '/contacts', priority: 0.5, changeFrequency: 'monthly' } as Entry] : []),
     { path: '/privacy', priority: 0.2, changeFrequency: 'yearly' },
   ]
 

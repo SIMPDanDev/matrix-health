@@ -59,7 +59,9 @@ export function localizeCertificate(c: Certificate, lang: Lang): Certificate {
 }
 
 export function localizeSettings(s: Settings, lang: Lang): Settings {
-  return translate(s, s.translations, lang, ['tagline', 'address', 'working_hours', 'delivery_info', 'payment_info'])
+  const out = translate(s, s.translations, lang, ['tagline', 'address', 'working_hours', 'delivery_info', 'payment_info'])
+  // Информационный сайт: адреса нет ни на одном языке (см. getSettings) — перевод его не возвращает
+  return s.sales_enabled ? out : { ...out, address: null }
 }
 
 export function localizeFilter(f: FilterOption, lang: Lang): FilterOption {

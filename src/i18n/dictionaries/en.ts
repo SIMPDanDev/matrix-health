@@ -23,12 +23,13 @@ const en = {
     consultationDescription: 'A specialist will help you choose peptides, tell you which tests to take and guide you through the course.',
     homeTitle: 'Peptides with documents for every batch in Moldova',
     homeDescription: 'Peptides with a certificate of analysis for every batch. Catalog, specialist consultation and delivery across Moldova.',
+    homeDescriptionInfo: 'Peptides with a certificate of analysis for every batch: description, composition and documents. Specialist consultation.',
     aboutDescription: 'Who we are, how we choose suppliers and why every batch comes with documents.',
     contactsDescription: 'Phone, messengers, address and business hours. Ask about products, prices and delivery in Moldova.',
-    contactsDescriptionInfo: 'Address and business hours. Peptide consultation with a specialist.',
     deliveryDescription: 'Delivery across Moldova by the store courier, storage of peptides in transit and returns.',
     privacyDescription: 'How we collect, store and use personal data of website visitors.',
     productDescription: '{name} — {category}. Documents for every batch, specialist consultation and delivery across Moldova.',
+    productDescriptionInfo: '{name} — {category}. Description, composition and documents for every batch.',
   },
 
   nav: {
@@ -80,6 +81,7 @@ const en = {
     titleStart: 'Health care with',
     titleAccent: 'verified composition',
     lead: 'Peptides with laboratory documents for every batch. We will help you choose before you order and deliver tomorrow.',
+    leadInfo: 'Peptides with laboratory documents for every batch: description, composition and certificates. A specialist will help you choose.',
     ctaCatalog: 'Go to catalog',
     ctaCheck: 'Check a batch',
     statProducts: { one: 'product', other: 'products' } as PluralForms,
@@ -92,12 +94,14 @@ const en = {
       { title: 'Cold chain', text: 'We store and ship peptides at +2…+8 °C' },
       { title: 'Consultation', text: 'We will help you choose the form and dosage' },
     ],
+    coldInfo: 'We store peptides at +2…+8 °C',
     featureDeliveryTitle: 'Fast delivery',
     featureDeliveryFree: 'Free from {price}',
     featureDeliveryNext: 'Next-day delivery in Chișinău',
     chooseDirection: 'Choose a category',
     allCatalog: 'All products',
     popular: 'Most ordered',
+    popularInfo: 'Popular peptides',
     seeAll: 'See all',
     verifyTitle: 'Verify authenticity in 10 seconds',
     verifyLead: 'The batch number is printed on the package. Enter it to open the laboratory document for your exact vial.',
@@ -168,13 +172,14 @@ const en = {
     another: 'Send another request',
     disclaimer: 'The consultation does not replace a doctor’s appointment and is not a diagnosis.',
     empty: 'Services will appear here soon. In the meantime, call or message us — we will help you choose.',
+    emptyInfo: 'Services will appear here soon.',
     errors: {
       name: 'How should we address you?',
       phone: 'We need a phone number to contact you',
       service: 'Choose a service',
       check: 'Please check the highlighted fields',
       notConnected: 'The database is not connected — the request cannot be saved. Call us instead.',
-      failed: 'We could not send the request. Call or message us.',
+      failed: 'We could not send the request. Please try again in a minute.',
       unavailable: 'This service is no longer available. Refresh the page.',
     },
   },
@@ -202,6 +207,7 @@ const en = {
     component: 'Component',
     amount: 'Amount',
     docsMissing: 'Documents for this batch have not been uploaded yet. Message us and we will send them within a day.',
+    docsMissingInfo: 'Documents for this batch will appear here soon.',
     allCertificates: 'All store certificates',
     related: 'Customers also viewed',
     purpose: 'Purpose',
@@ -264,6 +270,7 @@ const en = {
     reset: 'reset',
     notFoundTitle: 'Document not found',
     notFoundText: 'Check the number on the package. If it is correct, message us and we will send the certificate within a day.',
+    notFoundTextInfo: 'Check the number on the package. If it is correct, the document for this batch will appear here soon.',
     colDocument: 'Document',
     colProduct: 'Product',
     colBatch: 'Batch',
@@ -277,6 +284,7 @@ const en = {
     missingTitle: 'Could not find a document?',
     missingText:
       'Send us the batch number and we will send the certificate within one business day. If there is no document, we will tell you honestly.',
+    missingTextInfo: 'We publish documents for new batches after checking them. If you need a document now, mention the batch number in a consultation request.',
     call: 'Call us: {phone} →',
   },
 
@@ -415,10 +423,6 @@ const en = {
     hours: 'Business hours',
     cardTitle: 'The easiest way is to call',
     cardText: 'Tell us the batch number or ask about a product — we will answer your questions and help you choose.',
-    leadInfo: 'Our address and opening hours. A specialist will help you choose peptides at a consultation.',
-    infoCardTitle: 'Need help choosing?',
-    infoCardText: 'Book a consultation — a specialist will choose peptides for your goal and answer your questions.',
-    infoCardCta: 'Book a consultation',
   },
 
   about: {
@@ -427,7 +431,7 @@ const en = {
     titleEnd: 'matter more than advertising',
     paragraphs: [
       'We started with a simple question from customers: “How can you prove that this is what the label says?”. The answer is a certificate of analysis for a specific batch. Since then we do not sell products without documents.',
-      'Every delivery is checked: we verify the batch number, expiry date and storage conditions. Documents are published on the site — anyone can open them, without registration or requests.',
+      'Every new batch is checked: we verify the batch number, expiry date and storage conditions. Documents are published on the site — anyone can open them, without registration or requests.',
       'We do not make diagnoses or promise miracles. If you are not sure whether you need a product, ask us or your doctor.',
     ],
     toCatalog: 'View catalog',
@@ -441,22 +445,100 @@ const en = {
   },
 
   privacy: {
-    lead: 'How {store} handles customers’ personal data. This is a template — edit it for your store.',
+    lead: 'How {store} processes the personal data of website visitors: what we receive, why, who we share it with and how you can control it.',
     sections: [
       {
-        title: 'What data we collect',
-        text: 'Name, phone number, email (if provided), delivery address and order comment. We do not ask for or store bank card details.',
+        title: 'Who is responsible for your data',
+        text: 'The personal data controller is {store}. We process data in accordance with Law No. 195/2024 of the Republic of Moldova on personal data protection.',
       },
-      { title: 'Why', text: 'Only to contact you, confirm and deliver your order. We do not send newsletters without your consent.' },
-      { title: 'Who we share it with', text: 'With no one. Orders are delivered by our own courier.' },
-      { title: 'How long we keep it', text: 'Order data is kept for 3 years for accounting and warranty cases, then deleted.' },
+      {
+        title: 'What data we receive',
+        text: 'From an order: your name, phone number, email (if provided), city and delivery address, payment method, the order contents and your comment.\nFrom a consultation request: your name, phone number, preferred way of contact, the chosen service and your comment.\nAutomatically: IP address, browser and device type, the page you opened and the time of the visit — the hosting provider records them in technical logs.\nWe do not ask for passport details and do not receive bank card details.',
+      },
+      {
+        title: 'Why',
+        text: 'To confirm and deliver your order, send a copy of it to your email, contact you about a request and hold the consultation. Technical data is needed to keep the website running and protected from attacks.\nWe do not send advertising or newsletters without your separate consent.',
+      },
+      {
+        title: 'Legal basis',
+        text: 'Data from forms — on the basis of your consent, which you give when you submit a form. Order data — also because we cannot fulfil the order without it.\nTechnical data — on the basis of our legitimate interest in keeping the website reliable and protected from abuse.',
+      },
+      {
+        title: 'Who we share it with',
+        text: 'We do not sell your data or share it for advertising. Orders are delivered by our own courier — no data is passed to third-party delivery services.\nTechnically, the data passes through services the website cannot work without:\n• Vercel — website hosting;\n• Supabase — the database where orders and requests are stored;\n• Telegram — notifications to staff about a new order or request;\n• Google (Gmail) — the email with a copy of your order, if you provided an email.\nThe servers of these services may be located outside Moldova, including in EU countries and the USA.',
+      },
+      {
+        title: 'Cookies',
+        text: 'The website uses one cookie, hm_lang. It remembers the language you chose and is kept for one year. The cart is stored only in your browser (localStorage) and is not sent to us until you place an order.\nThere are no analytics or advertising cookies, and we do not track you on other websites.',
+      },
+      {
+        title: 'How long we keep it',
+        text: 'Orders — 3 years for accounting and warranty cases; requests — no longer than 3 years after your last contact; then we delete them. The hosting provider keeps technical logs for a short time and deletes them automatically.',
+      },
+      {
+        title: 'How we protect data',
+        text: 'The website works only over a secure HTTPS connection. Only the staff who handle requests and orders have access to them, with a personal password.',
+      },
       {
         title: 'Your rights',
-        text: 'You can ask us to show, correct or delete your data. {contact}',
+        text: 'You can find out what data we hold about you, correct or delete it, restrict processing, withdraw your consent and object to processing.\nTo exercise a right, write to {email} or call{phone}. We will reply within one month.\nIf you believe your rights have been violated, you can contact the National Center for Personal Data Protection of the Republic of Moldova — datepersonale.md.',
+      },
+      {
+        title: 'Children',
+        text: 'The website is not intended for people under 18. We do not knowingly collect their data.',
+      },
+      {
+        title: 'Changes to this policy',
+        text: 'We may update this policy, for example when new features appear on the website. A new version applies from the moment it is published on this page.',
       },
     ],
-    contactSales: 'Write to {email} or call{phone}.',
-    contactInfo: 'Contact us at the address on the Contacts page or through the consultation form.',
+    // Информационный сайт: только заявки на консультацию — без заказов, доставки, почты и телефона
+    sectionsInfo: [
+      {
+        title: 'Who is responsible for your data',
+        text: 'The personal data controller is {store}. We process data in accordance with Law No. 195/2024 of the Republic of Moldova on personal data protection.',
+      },
+      {
+        title: 'What data we receive',
+        text: 'From a consultation request: your name, phone number, preferred way of contact (call, Telegram, Viber or WhatsApp), the chosen service and your comment, if you left one.\nAutomatically: IP address, browser and device type, the page you opened and the time of the visit — the hosting provider records them in technical logs.\nWe do not ask for passport details or bank card details.',
+      },
+      {
+        title: 'Why',
+        text: 'To contact you, answer your questions and hold the consultation. Technical data is needed to keep the website running and protected from attacks.\nWe do not send advertising or newsletters without your separate consent.',
+      },
+      {
+        title: 'Legal basis',
+        text: 'Data from forms — on the basis of your consent, which you give when you submit a form.\nTechnical data — on the basis of our legitimate interest in keeping the website reliable and protected from abuse.',
+      },
+      {
+        title: 'Who we share it with',
+        text: 'We do not sell your data or share it for advertising. Only the staff who handle requests can see it.\nTechnically, the data passes through services the website cannot work without:\n• Vercel — website hosting;\n• Supabase — the database where requests are stored;\n• Telegram — notifications to staff about a new request.\nThe servers of these services may be located outside Moldova, including in EU countries and the USA.',
+      },
+      {
+        title: 'Cookies',
+        text: 'The website uses one cookie, hm_lang. It remembers the language you chose and is kept for one year.\nThere are no analytics or advertising cookies, and we do not track you on other websites.',
+      },
+      {
+        title: 'How long we keep it',
+        text: 'Requests — no longer than 3 years after your last contact, then we delete them. The hosting provider keeps technical logs for a short time and deletes them automatically.',
+      },
+      {
+        title: 'How we protect data',
+        text: 'The website works only over a secure HTTPS connection. Only the staff who handle requests have access to them, with a personal password.',
+      },
+      {
+        title: 'Your rights',
+        text: 'You can find out what data we hold about you, correct or delete it, restrict processing, withdraw your consent and object to processing.\nTo exercise a right, submit a consultation request and describe what you need in the comment. We will reply within one month.\nIf you believe your rights have been violated, you can contact the National Center for Personal Data Protection of the Republic of Moldova — datepersonale.md.',
+      },
+      {
+        title: 'Children',
+        text: 'The website is not intended for people under 18. We do not knowingly collect their data.',
+      },
+      {
+        title: 'Changes to this policy',
+        text: 'We may update this policy, for example when new features appear on the website. A new version applies from the moment it is published on this page.',
+      },
+    ],
     ourEmail: 'our email',
     phoneSuffix: ' {phone}',
   },

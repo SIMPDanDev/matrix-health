@@ -19,7 +19,8 @@ export default async function AboutPage() {
     [String(catalog.products.length), a.factProducts],
     [String(catalog.certificates.length), a.factDocuments],
     [a.factStorageValue, a.factStorage],
-    [a.factDeliveryValue, a.factDelivery],
+    // Информационный сайт: о доставке не пишем
+    ...(s.sales_enabled ? [[a.factDeliveryValue, a.factDelivery]] : []),
   ]
 
   return (

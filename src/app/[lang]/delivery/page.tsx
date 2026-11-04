@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { PageHead } from '@/components/page-head'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
@@ -12,6 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function DeliveryPage() {
   const { i18n, settings: s } = await getShop()
   const { t, money, fmt } = i18n
+  // Информационный сайт: о доставке не пишем — в каталог
+  if (!s.sales_enabled) redirect(i18n.path('/catalog'))
   const d = t.delivery
   const paid = s.free_delivery_from > 0 ? fmt(d.price, { cost: money(s.delivery_cost), free: money(s.free_delivery_from) }) : money(s.delivery_cost)
 

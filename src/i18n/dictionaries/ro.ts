@@ -21,12 +21,13 @@ const ro: Dictionary = {
     consultationDescription: 'Specialistul vă ajută să alegeți peptidele, vă spune ce analize să faceți și vă însoțește pe durata curei.',
     homeTitle: 'Peptide cu documente pentru fiecare lot în Moldova',
     homeDescription: 'Peptide cu certificat de analiză pentru fiecare lot. Catalog, consultație cu specialistul și livrare în toată Moldova.',
+    homeDescriptionInfo: 'Peptide cu certificat de analiză pentru fiecare lot: descriere, compoziție și documente. Consultație cu specialistul.',
     aboutDescription: 'Cine suntem, cum alegem furnizorii și de ce fiecare lot are documente.',
     contactsDescription: 'Telefon, mesagerii, adresă și program de lucru. Întrebați despre produse, prețuri și livrare în Moldova.',
-    contactsDescriptionInfo: 'Adresa și programul de lucru. Consultație despre peptide cu un specialist.',
     deliveryDescription: 'Livrare în toată Moldova prin curierul magazinului, păstrarea peptidelor în timpul transportului și retur.',
     privacyDescription: 'Cum colectăm, păstrăm și folosim datele personale ale vizitatorilor site-ului.',
     productDescription: '{name} — {category}. Documente pentru fiecare lot, consultație cu specialistul și livrare în toată Moldova.',
+    productDescriptionInfo: '{name} — {category}. Descriere, compoziție și documente pentru fiecare lot.',
   },
 
   nav: {
@@ -78,6 +79,7 @@ const ro: Dictionary = {
     titleStart: 'Grijă pentru sănătate cu',
     titleAccent: 'compoziție verificată',
     lead: 'Peptide cu documente de laborator pentru fiecare lot. Vă ajutăm să alegeți înainte de comandă și livrăm mâine.',
+    leadInfo: 'Peptide cu documente de laborator pentru fiecare lot: descriere, compoziție și certificate. Specialistul vă ajută să alegeți.',
     ctaCatalog: 'Spre catalog',
     ctaCheck: 'Verifică lotul',
     statProducts: { one: 'produs', few: 'produse', other: 'de produse' },
@@ -90,12 +92,14 @@ const ro: Dictionary = {
       { title: 'Lanț de frig', text: 'Păstrăm și livrăm peptidele la +2…+8 °C' },
       { title: 'Consultație', text: 'Vă ajutăm să alegeți forma și doza' },
     ],
+    coldInfo: 'Păstrăm peptidele la +2…+8 °C',
     featureDeliveryTitle: 'Livrare rapidă',
     featureDeliveryFree: 'Gratuit de la {price}',
     featureDeliveryNext: 'În Chișinău — a doua zi',
     chooseDirection: 'Alegeți o categorie',
     allCatalog: 'Toate produsele',
     popular: 'Cele mai comandate',
+    popularInfo: 'Peptide populare',
     seeAll: 'Vezi toate',
     verifyTitle: 'Verificați autenticitatea în 10 secunde',
     verifyLead:
@@ -171,13 +175,14 @@ const ro: Dictionary = {
     another: 'Trimiteți încă o cerere',
     disclaimer: 'Consultația nu înlocuiește vizita la medic și nu reprezintă un diagnostic.',
     empty: 'Serviciile vor apărea în curând. Până atunci, sunați-ne sau scrieți-ne — vă ajutăm să alegeți.',
+    emptyInfo: 'Serviciile vor apărea în curând.',
     errors: {
       name: 'Cum vă putem adresa?',
       phone: 'Avem nevoie de un număr de telefon pentru a vă contacta',
       service: 'Alegeți serviciul',
       check: 'Verificați câmpurile marcate',
       notConnected: 'Baza de date nu este conectată — cererea nu poate fi salvată. Sunați-ne.',
-      failed: 'Nu am putut trimite cererea. Sunați-ne sau scrieți-ne.',
+      failed: 'Nu am putut trimite cererea. Încercați din nou peste un minut.',
       unavailable: 'Acest serviciu nu mai este disponibil. Reîncărcați pagina.',
     },
   },
@@ -205,6 +210,7 @@ const ro: Dictionary = {
     component: 'Componentă',
     amount: 'Cantitate',
     docsMissing: 'Documentele pentru acest lot nu au fost încă încărcate. Scrieți-ne și le trimitem în decurs de o zi.',
+    docsMissingInfo: 'Documentele pentru acest lot vor apărea aici în curând.',
     allCertificates: 'Toate certificatele magazinului',
     related: 'Clienții au mai văzut',
     purpose: 'Destinație',
@@ -268,6 +274,7 @@ const ro: Dictionary = {
     notFoundTitle: 'Documentul nu a fost găsit',
     notFoundText:
       'Verificați numărul de pe ambalaj. Dacă este corect, scrieți-ne și vă trimitem certificatul în decurs de o zi.',
+    notFoundTextInfo: 'Verificați numărul de pe ambalaj. Dacă este corect, documentul pentru acest lot va apărea aici în curând.',
     colDocument: 'Document',
     colProduct: 'Produs',
     colBatch: 'Lot',
@@ -281,6 +288,7 @@ const ro: Dictionary = {
     missingTitle: 'Nu ați găsit documentul?',
     missingText:
       'Trimiteți-ne numărul lotului și vă trimitem certificatul în decurs de o zi lucrătoare. Dacă documentul lipsește, vă spunem sincer.',
+    missingTextInfo: 'Documentele pentru loturile noi le publicăm după verificare. Dacă aveți nevoie de un document acum, indicați numărul lotului în cererea de consultație.',
     call: 'Sunați-ne: {phone} →',
   },
 
@@ -420,10 +428,6 @@ const ro: Dictionary = {
     hours: 'Program',
     cardTitle: 'Cel mai simplu — sunați-ne',
     cardText: 'Spuneți-ne numărul lotului sau întrebați despre un produs — răspundem la întrebări și vă ajutăm să alegeți.',
-    leadInfo: 'Adresa și programul de lucru. La consultație, specialistul vă ajută să alegeți peptidele.',
-    infoCardTitle: 'Aveți nevoie de ajutor la alegere?',
-    infoCardText: 'Programați o consultație — specialistul alege peptidele pentru scopul dvs. și răspunde la întrebări.',
-    infoCardCta: 'Programează o consultație',
   },
 
   about: {
@@ -432,7 +436,7 @@ const ro: Dictionary = {
     titleEnd: 'contează mai mult decât reclama',
     paragraphs: [
       'Am început cu o întrebare simplă a clienților: „Cum dovediți că este ceea ce scrie pe ambalaj?”. Răspunsul este certificatul de analiză al unui lot concret. De atunci nu punem în vânzare produse fără documente.',
-      'Fiecare livrare este verificată: confruntăm numărul lotului, termenul de valabilitate și condițiile de păstrare. Documentele le publicăm pe site — oricine le poate deschide, fără înregistrare și fără solicitări.',
+      'Fiecare lot nou este verificat: confruntăm numărul lotului, termenul de valabilitate și condițiile de păstrare. Documentele le publicăm pe site — oricine le poate deschide, fără înregistrare și fără solicitări.',
       'Nu punem diagnostice și nu promitem minuni. Dacă nu sunteți sigur că aveți nevoie de un produs, întrebați-ne pe noi sau pe medicul dumneavoastră.',
     ],
     toCatalog: 'Vezi catalogul',
@@ -446,28 +450,100 @@ const ro: Dictionary = {
   },
 
   privacy: {
-    lead: 'Cum gestionează {store} datele personale ale clienților. Text-șablon — editați-l pentru magazinul dumneavoastră.',
+    lead: 'Cum prelucrează {store} datele personale ale vizitatorilor site-ului: ce primim, de ce, cui le transmitem și cum le puteți controla.',
     sections: [
       {
-        title: 'Ce date colectăm',
-        text: 'Numele, telefonul, emailul (dacă l-ați indicat), adresa de livrare și comentariul la comandă. Nu solicităm și nu păstrăm datele cardurilor bancare.',
+        title: 'Cine răspunde de datele dumneavoastră',
+        text: 'Operatorul de date cu caracter personal este {store}. Prelucrăm datele în conformitate cu Legea Republicii Moldova nr. 195/2024 privind protecția datelor cu caracter personal.',
+      },
+      {
+        title: 'Ce date primim',
+        text: 'Din comandă: numele, numărul de telefon, emailul (dacă l-ați indicat), orașul și adresa de livrare, modul de plată, conținutul comenzii și comentariul.\nDin cererea de consultație: numele, numărul de telefon, modul preferat de contact, serviciul ales și comentariul.\nAutomat: adresa IP, tipul browserului și al dispozitivului, pagina deschisă și ora vizitei — furnizorul de hosting le înregistrează în jurnalele tehnice.\nNu solicităm datele din pașaport și nu primim datele cardurilor bancare.',
       },
       {
         title: 'De ce',
-        text: 'Doar pentru a vă contacta, a confirma și a livra comanda. Nu trimitem buletine informative fără acordul dumneavoastră.',
+        text: 'Pentru a confirma și a livra comanda, a vă trimite o copie a ei pe email, a vă contacta în legătură cu o cerere și a efectua consultația. Datele tehnice sunt necesare pentru ca site-ul să funcționeze și să fie protejat de atacuri.\nNu trimitem publicitate sau buletine informative fără acordul dumneavoastră separat.',
+      },
+      {
+        title: 'Temeiul prelucrării',
+        text: 'Datele din formulare — în baza consimțământului dumneavoastră, pe care îl dați când trimiteți formularul. Datele comenzii — și pentru că fără ele nu putem executa comanda.\nDatele tehnice — în baza interesului nostru legitim ca site-ul să funcționeze fiabil și să fie protejat de abuzuri.',
       },
       {
         title: 'Cui le transmitem',
-        text: 'Nimănui. Comenzile sunt livrate de curierul nostru.',
+        text: 'Nu vindem datele dumneavoastră și nu le transmitem în scopuri publicitare. Comenzile sunt livrate de curierul nostru — datele nu sunt transmise serviciilor de livrare terțe.\nTehnic, datele trec prin servicii fără de care site-ul nu funcționează:\n• Vercel — găzduirea site-ului;\n• Supabase — baza de date în care se păstrează comenzile și cererile;\n• Telegram — notificări pentru angajați despre o comandă sau cerere nouă;\n• Google (Gmail) — emailul cu copia comenzii, dacă ați indicat un email.\nServerele acestor servicii pot fi situate în afara Moldovei, inclusiv în țări ale UE și în SUA.',
       },
-      { title: 'Cât timp le păstrăm', text: 'Datele comenzii se păstrează 3 ani pentru evidență și cazuri de garanție, apoi se șterg.' },
+      {
+        title: 'Cookie-uri',
+        text: 'Site-ul folosește un singur cookie — hm_lang. Acesta reține limba aleasă și se păstrează un an. Coșul se păstrează doar în browserul dumneavoastră (localStorage) și nu ne este transmis până nu plasați comanda.\nPe site nu există cookie-uri de analiză sau de publicitate și nu vă urmărim pe alte site-uri.',
+      },
+      {
+        title: 'Cât timp le păstrăm',
+        text: 'Comenzile — 3 ani pentru evidență și cazuri de garanție, cererile — cel mult 3 ani după ultima adresare, apoi le ștergem. Jurnalele tehnice sunt păstrate de furnizorul de hosting pentru scurt timp și se șterg automat.',
+      },
+      {
+        title: 'Cum protejăm datele',
+        text: 'Site-ul funcționează doar prin conexiune securizată HTTPS. Acces la cereri și comenzi au doar angajații care lucrează cu ele, cu parolă personală.',
+      },
       {
         title: 'Drepturile dumneavoastră',
-        text: 'Ne puteți cere să vă arătăm, să corectăm sau să ștergem datele. {contact}',
+        text: 'Puteți afla ce date avem despre dumneavoastră, le puteți corecta sau șterge, puteți restricționa prelucrarea, vă puteți retrage consimțământul și vă puteți opune prelucrării.\nPentru a vă exercita un drept, scrieți la {email} sau sunați{phone}. Vă răspundem în cel mult o lună.\nDacă considerați că drepturile v-au fost încălcate, vă puteți adresa Centrului Național pentru Protecția Datelor cu Caracter Personal al Republicii Moldova — datepersonale.md.',
+      },
+      {
+        title: 'Copiii',
+        text: 'Site-ul nu este destinat persoanelor sub 18 ani. Nu colectăm intenționat datele acestora.',
+      },
+      {
+        title: 'Modificarea politicii',
+        text: 'Putem actualiza această politică, de exemplu când pe site apar funcții noi. Noua redacție se aplică din momentul publicării pe această pagină.',
       },
     ],
-    contactSales: 'Scrieți la {email} sau sunați{phone}.',
-    contactInfo: 'Adresați-vă nouă la adresa din pagina Contacte sau prin formularul de consultație.',
+    // Информационный сайт: только заявки на консультацию — без заказов, доставки, почты и телефона
+    sectionsInfo: [
+      {
+        title: 'Cine răspunde de datele dumneavoastră',
+        text: 'Operatorul de date cu caracter personal este {store}. Prelucrăm datele în conformitate cu Legea Republicii Moldova nr. 195/2024 privind protecția datelor cu caracter personal.',
+      },
+      {
+        title: 'Ce date primim',
+        text: 'Din cererea de consultație: numele, numărul de telefon, modul preferat de contact (apel, Telegram, Viber sau WhatsApp), serviciul ales și comentariul, dacă l-ați lăsat.\nAutomat: adresa IP, tipul browserului și al dispozitivului, pagina deschisă și ora vizitei — furnizorul de hosting le înregistrează în jurnalele tehnice.\nNu solicităm datele din pașaport și datele cardurilor bancare.',
+      },
+      {
+        title: 'De ce',
+        text: 'Pentru a vă contacta, a răspunde la întrebări și a efectua consultația. Datele tehnice sunt necesare pentru ca site-ul să funcționeze și să fie protejat de atacuri.\nNu trimitem publicitate sau buletine informative fără acordul dumneavoastră separat.',
+      },
+      {
+        title: 'Temeiul prelucrării',
+        text: 'Datele din formulare — în baza consimțământului dumneavoastră, pe care îl dați când trimiteți formularul.\nDatele tehnice — în baza interesului nostru legitim ca site-ul să funcționeze fiabil și să fie protejat de abuzuri.',
+      },
+      {
+        title: 'Cui le transmitem',
+        text: 'Nu vindem datele dumneavoastră și nu le transmitem în scopuri publicitare. Le văd doar angajații care prelucrează cererile.\nTehnic, datele trec prin servicii fără de care site-ul nu funcționează:\n• Vercel — găzduirea site-ului;\n• Supabase — baza de date în care se păstrează cererile;\n• Telegram — notificări pentru angajați despre o cerere nouă.\nServerele acestor servicii pot fi situate în afara Moldovei, inclusiv în țări ale UE și în SUA.',
+      },
+      {
+        title: 'Cookie-uri',
+        text: 'Site-ul folosește un singur cookie — hm_lang. Acesta reține limba aleasă și se păstrează un an.\nPe site nu există cookie-uri de analiză sau de publicitate și nu vă urmărim pe alte site-uri.',
+      },
+      {
+        title: 'Cât timp le păstrăm',
+        text: 'Cererile — cel mult 3 ani după ultima adresare, apoi le ștergem. Jurnalele tehnice sunt păstrate de furnizorul de hosting pentru scurt timp și se șterg automat.',
+      },
+      {
+        title: 'Cum protejăm datele',
+        text: 'Site-ul funcționează doar prin conexiune securizată HTTPS. Acces la cereri au doar angajații care lucrează cu ele, cu parolă personală.',
+      },
+      {
+        title: 'Drepturile dumneavoastră',
+        text: 'Puteți afla ce date avem despre dumneavoastră, le puteți corecta sau șterge, puteți restricționa prelucrarea, vă puteți retrage consimțământul și vă puteți opune prelucrării.\nPentru a vă exercita un drept, trimiteți o cerere de consultație și descrieți solicitarea în comentariu. Vă răspundem în cel mult o lună.\nDacă considerați că drepturile v-au fost încălcate, vă puteți adresa Centrului Național pentru Protecția Datelor cu Caracter Personal al Republicii Moldova — datepersonale.md.',
+      },
+      {
+        title: 'Copiii',
+        text: 'Site-ul nu este destinat persoanelor sub 18 ani. Nu colectăm intenționat datele acestora.',
+      },
+      {
+        title: 'Modificarea politicii',
+        text: 'Putem actualiza această politică, de exemplu când pe site apar funcții noi. Noua redacție se aplică din momentul publicării pe această pagină.',
+      },
+    ],
     ourEmail: 'adresa noastră de email',
     phoneSuffix: ' la numărul {phone}',
   },

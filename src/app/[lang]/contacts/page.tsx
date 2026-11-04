@@ -1,26 +1,22 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { IconArrow, IconPhone } from '@/components/icons'
+import { redirect } from 'next/navigation'
+import { IconPhone } from '@/components/icons'
 import { PageHead } from '@/components/page-head'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
-import { getSettings } from '@/lib/data'
 import { telHref } from '@/lib/format'
 import { getShop, shopMeta } from '@/lib/shop'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [{ t }, s] = await Promise.all([getI18n(), getSettings()])
-  return shopMeta('/contacts', {
-    title: t.meta.contacts,
-    description: s.sales_enabled ? t.meta.contactsDescription : t.meta.contactsDescriptionInfo,
-  })
+  const { t } = await getI18n()
+  return shopMeta('/contacts', { title: t.meta.contacts, description: t.meta.contactsDescription })
 }
 
 export default async function ContactsPage() {
   const { i18n, settings: s } = await getShop()
   const c = i18n.t.contacts
-  // Информационный сайт: телефона и почты нет (см. getSettings) — вместо звонка ведём на консультацию
-  const info = !s.sales_enabled
+  // Информационный сайт: ни телефона, ни почты, ни адреса — связаться можно через консультацию
+  if (!s.sales_enabled) redirect(i18n.path('/consultation'))
 
   const rows: { label: string; value: React.ReactNode }[] = []
   if (s.phone)
@@ -46,7 +42,7 @@ export default async function ContactsPage() {
 
   return (
     <div className={`${wrap} pt-6 lg:pt-8`}>
-      <PageHead crumb={i18n.t.meta.contacts} title={i18n.t.meta.contacts} lead={info ? c.leadInfo : c.lead} />
+      <PageHead crumb={i18n.t.meta.contacts} title={i18n.t.meta.contacts} lead={c.lead} />
 
       <div className="grid gap-12 py-14 lg:grid-cols-[1.2fr_1fr] lg:gap-20">
         <dl className="border-t border-line-strong text-lg">
@@ -59,17 +55,9 @@ export default async function ContactsPage() {
         </dl>
 
         <div className="h-fit rounded-[32px] bg-brand p-8 text-white sm:p-10">
-          <p className="text-2xl font-semibold tracking-[-0.02em]">{info ? c.infoCardTitle : c.cardTitle}</p>
-          <p className="mt-3 leading-relaxed text-white/70">{info ? c.infoCardText : c.cardText}</p>
+          <p className="text-2xl font-semibold tracking-[-0.02em]">{c.cardTitle}</p>
+          <p className="mt-3 leading-relaxed text-white/70">{c.cardText}</p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {info && (
-              <Link
-                href={i18n.path('/consultation')}
-                className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 font-semibold text-brand-dark hover:brightness-105"
-              >
-                {c.infoCardCta} <IconArrow size={18} />
-              </Link>
-            )}
             {s.phone && (
               <a
                 href={telHref(s.phone)}

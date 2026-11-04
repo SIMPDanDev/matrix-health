@@ -52,7 +52,7 @@ export default async function ConsultationPage() {
         // Услуги ещё не заведены в базе — предлагаем связаться напрямую
         <section className="py-12 lg:py-14">
           <div className="flex flex-col gap-6 rounded-[32px] bg-periwinkle p-6 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
-            <p className="max-w-xl text-lg leading-relaxed text-ink-2">{c.empty}</p>
+            <p className="max-w-xl text-lg leading-relaxed text-ink-2">{s.sales_enabled ? c.empty : c.emptyInfo}</p>
             <div className="flex flex-wrap gap-3">
               {s.phone && (
                 <a href={telHref(s.phone)} className={btn.dark}>

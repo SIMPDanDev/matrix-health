@@ -14,13 +14,20 @@ export async function SiteHeader() {
   const { i18n, catalog, settings } = await getShop()
   const { t, path, money, lang } = i18n
 
+  // На информационном сайте нет страниц «Доставка» и «Контакты»
+  const sales = settings.sales_enabled
+
   // В шапке только главные разделы; на узких экранах часть из них прячется (show), чтобы не вытеснять корзину. Категории — на главной и в каталоге, а в мобильном меню — всё.
   const mainNav = [
     { href: path('/catalog'), label: t.nav.catalog },
     { href: path('/consultation'), label: t.nav.consultation },
     { href: path('/certificates'), label: t.nav.certificates },
-    { href: path('/delivery'), label: t.nav.delivery, show: 'hidden xl:block' },
-    { href: path('/contacts'), label: t.nav.contacts, show: 'hidden min-[1400px]:block' },
+    ...(sales
+      ? [
+          { href: path('/delivery'), label: t.nav.delivery, show: 'hidden xl:block' },
+          { href: path('/contacts'), label: t.nav.contacts, show: 'hidden min-[1400px]:block' },
+        ]
+      : []),
   ]
 
   const mobileNav = [
@@ -29,8 +36,12 @@ export async function SiteHeader() {
     { href: path('/peptides'), label: t.nav.peptides },
     { href: path('/consultation'), label: t.nav.consultation },
     { href: path('/certificates'), label: t.nav.certificates },
-    { href: path('/delivery'), label: t.nav.deliveryFull },
-    { href: path('/contacts'), label: t.nav.contacts },
+    ...(sales
+      ? [
+          { href: path('/delivery'), label: t.nav.deliveryFull },
+          { href: path('/contacts'), label: t.nav.contacts },
+        ]
+      : []),
   ]
 
   return (

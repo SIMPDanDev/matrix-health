@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { IconArrow, IconPhone, IconShield, IconSnow, IconTruck } from '@/components/icons'
+import { IconArrow, IconChat, IconPhone, IconShield, IconSnow, IconTruck } from '@/components/icons'
 import { ProductCard } from '@/components/product-card'
 import { ProductVisual } from '@/components/product-visual'
 import { btn, wrap } from '@/components/ui'
@@ -12,7 +12,10 @@ import type { PeptidesContent, Product } from '@/lib/types'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ t }, s] = await Promise.all([getI18n(), getSettings()])
-  return shopMeta('/', { title: { absolute: `${s.store_name} — ${t.meta.homeTitle}` }, description: t.meta.homeDescription })
+  return shopMeta('/', {
+    title: { absolute: `${s.store_name} — ${t.meta.homeTitle}` },
+    description: s.sales_enabled ? t.meta.homeDescription : t.meta.homeDescriptionInfo,
+  })
 }
 
 export default async function HomePage() {
@@ -23,6 +26,8 @@ export default async function HomePage() {
   ])
   const { t, path, money, plural, fmt } = i18n
   const { products, categories, certificates } = catalog
+  // Информационный сайт: без доставки, заказов и звонков
+  const sales = s.sales_enabled
 
   const withDocs = new Set(certificates.map((c) => c.product_id))
   const popular = [...products].sort((a, b) => Number(b.is_popular) - Number(a.is_popular)).slice(0, 8)
@@ -37,13 +42,17 @@ export default async function HomePage() {
 
   const features = [
     { icon: <IconShield size={22} />, ...t.home.features[0] },
-    { icon: <IconSnow size={22} />, ...t.home.features[1] },
-    { icon: <IconPhone size={22} />, ...t.home.features[2] },
-    {
-      icon: <IconTruck size={22} />,
-      title: t.home.featureDeliveryTitle,
-      text: s.sales_enabled && s.free_delivery_from > 0 ? fmt(t.home.featureDeliveryFree, { price: money(s.free_delivery_from) }) : t.home.featureDeliveryNext,
-    },
+    { icon: <IconSnow size={22} />, ...t.home.features[1], ...(sales ? {} : { text: t.home.coldInfo }) },
+    { icon: sales ? <IconPhone size={22} /> : <IconChat size={22} />, ...t.home.features[2] },
+    ...(sales
+      ? [
+          {
+            icon: <IconTruck size={22} />,
+            title: t.home.featureDeliveryTitle,
+            text: s.free_delivery_from > 0 ? fmt(t.home.featureDeliveryFree, { price: money(s.free_delivery_from) }) : t.home.featureDeliveryNext,
+          },
+        ]
+      : []),
   ]
 
   return (
@@ -63,7 +72,7 @@ export default async function HomePage() {
               <h1 className="mt-6 text-[clamp(2.4rem,5.4vw,4.4rem)] leading-[1.02] font-bold tracking-[-0.035em] text-balance">
                 {t.home.titleStart} <span className="text-accent">{t.home.titleAccent}</span>
               </h1>
-              <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/80">{t.home.lead}</p>
+              <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/80">{sales ? t.home.lead : t.home.leadInfo}</p>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
@@ -85,7 +94,7 @@ export default async function HomePage() {
                 {certificates.length > 0 && (
                   <Stat value={String(certificates.length)} label={plural(certificates.length, t.home.statDocuments)} />
                 )}
-                <Stat value={t.home.statDeliveryValue} label={t.home.statDeliveryLabel} />
+                {sales && <Stat value={t.home.statDeliveryValue} label={t.home.statDeliveryLabel} />}
               </dl>
             </div>
 
@@ -123,7 +132,9 @@ export default async function HomePage() {
 
       {/* ——— Почему нам доверяют ——— */}
       <section className={`${wrap} pt-6`}>
-        <ul className="grid gap-px overflow-hidden rounded-[28px] bg-line ring-1 ring-line sm:grid-cols-2 lg:grid-cols-4">
+        <ul
+          className={`grid gap-px overflow-hidden rounded-[28px] bg-line ring-1 ring-line ${sales ? 'sm:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'}`}
+        >
           {features.map((f) => (
             <li key={f.title} className="flex items-start gap-4 bg-surface p-5 lg:p-6">
               <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-brand">{f.icon}</span>
@@ -202,7 +213,7 @@ export default async function HomePage() {
       {/* ——— Популярное ——— */}
       {popular.length > 0 && (
         <section className={`${wrap} pt-20 lg:pt-24`}>
-          <SectionHead title={t.home.popular} link={{ href: path('/catalog'), label: t.home.seeAll }} />
+          <SectionHead title={sales ? t.home.popular : t.home.popularInfo} link={{ href: path('/catalog'), label: t.home.seeAll }} />
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             {popular.map((p) => (
               <ProductCard key={p.id} product={p} hasDocs={withDocs.has(p.id)} />

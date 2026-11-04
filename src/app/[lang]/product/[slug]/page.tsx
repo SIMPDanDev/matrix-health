@@ -11,13 +11,14 @@ import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
+import { getSettings } from '@/lib/data'
 import { filterName } from '@/lib/filters'
 import { breadcrumbSchema, productSchema, snippet } from '@/lib/seo'
 import { getShop, getShopProduct, shopMeta } from '@/lib/shop'
 
 export async function generateMetadata(props: PageProps<'/[lang]/product/[slug]'>): Promise<Metadata> {
   const { slug } = await props.params
-  const [data, { t, fmt }] = await Promise.all([getShopProduct(slug), getI18n()])
+  const [data, { t, fmt }, settings] = await Promise.all([getShopProduct(slug), getI18n(), getSettings()])
   if (!data) return { title: t.meta.productNotFound, robots: { index: false } }
   const p = data.product
   return shopMeta(`/product/${p.slug}`, {
@@ -26,7 +27,10 @@ export async function generateMetadata(props: PageProps<'/[lang]/product/[slug]'
     description:
       snippet(p.short_description) ??
       snippet(p.description) ??
-      fmt(t.meta.productDescription, { name: p.name, category: p.category?.name ?? t.meta.catalog }),
+      fmt(settings.sales_enabled ? t.meta.productDescription : t.meta.productDescriptionInfo, {
+        name: p.name,
+        category: p.category?.name ?? t.meta.catalog,
+      }),
     image: p.images[0] ?? null,
   })
 }
@@ -118,24 +122,27 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
             </div>
           )}
 
-          <ul className="mt-5 grid gap-3 text-sm text-ink-2 sm:grid-cols-3">
-            <li className="flex items-start gap-2">
-              <IconShield size={18} className="mt-px shrink-0 text-brand" />
-              {certificates.length ? plural(certificates.length, t.product.docsCount) : t.product.docsOnRequest}
-            </li>
-            {settings.sales_enabled && settings.free_delivery_from > 0 && (
+          {/* Документы, доставка, термопакет — только для продаж. На информационном сайте документы партии — в разделе ниже */}
+          {settings.sales_enabled && (
+            <ul className="mt-5 grid gap-3 text-sm text-ink-2 sm:grid-cols-3">
               <li className="flex items-start gap-2">
-                <IconTruck size={18} className="mt-px shrink-0 text-brand" />
-                {fmt(t.product.freeFrom, { price: money(settings.free_delivery_from) })}
+                <IconShield size={18} className="mt-px shrink-0 text-brand" />
+                {certificates.length ? plural(certificates.length, t.product.docsCount) : t.product.docsOnRequest}
               </li>
-            )}
-            {isCold && (
-              <li className="flex items-start gap-2">
-                <IconSnow size={18} className="mt-px shrink-0 text-brand" />
-                {t.product.thermal}
-              </li>
-            )}
-          </ul>
+              {settings.sales_enabled && settings.free_delivery_from > 0 && (
+                <li className="flex items-start gap-2">
+                  <IconTruck size={18} className="mt-px shrink-0 text-brand" />
+                  {fmt(t.product.freeFrom, { price: money(settings.free_delivery_from) })}
+                </li>
+              )}
+              {isCold && (
+                <li className="flex items-start gap-2">
+                  <IconSnow size={18} className="mt-px shrink-0 text-brand" />
+                  {t.product.thermal}
+                </li>
+              )}
+            </ul>
+          )}
 
           {(p.specs.length > 0 || p.purposes.length > 0) && (
             <dl className="mt-8 rounded-3xl bg-surface px-5 text-[15px] ring-1 ring-line [&>div:last-child]:border-0">
@@ -208,7 +215,7 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
                 ))}
               </ul>
             ) : (
-              <p className="text-ink-2">{t.product.docsMissing}</p>
+              <p className="text-ink-2">{settings.sales_enabled ? t.product.docsMissing : t.product.docsMissingInfo}</p>
             )}
             <Link href={path('/certificates')} className="mt-5 inline-block text-[15px] font-medium text-brand hover:underline">
               {t.product.allCertificates} →

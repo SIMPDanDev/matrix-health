@@ -119,7 +119,7 @@ async function Registry({ searchParams }: Pick<PageProps<'/[lang]/certificates'>
       {list.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-line-strong px-6 py-14 text-center">
           <p className="text-xl font-medium">{t.certs.notFoundTitle}</p>
-          <p className="mx-auto mt-2 max-w-md text-ink-2">{t.certs.notFoundText}</p>
+          <p className="mx-auto mt-2 max-w-md text-ink-2">{s.sales_enabled ? t.certs.notFoundText : t.certs.notFoundTextInfo}</p>
           {s.phone && (
             <a href={telHref(s.phone)} className="mt-5 inline-block font-medium text-brand hover:underline">
               {fmt(t.certs.call, { phone: s.phone })}
@@ -188,7 +188,7 @@ async function Registry({ searchParams }: Pick<PageProps<'/[lang]/certificates'>
         </div>
         <div>
           <h2 className="text-xl font-semibold">{t.certs.missingTitle}</h2>
-          <p className="mt-3 leading-relaxed text-ink-2">{t.certs.missingText}</p>
+          <p className="mt-3 leading-relaxed text-ink-2">{s.sales_enabled ? t.certs.missingText : t.certs.missingTextInfo}</p>
           {s.phone && (
             <a href={telHref(s.phone)} className="mt-4 inline-block font-medium text-brand hover:underline">
               {fmt(t.certs.call, { phone: s.phone })}

@@ -115,9 +115,9 @@ export async function getSettings(): Promise<Settings> {
     delivery_cost: num(data.delivery_cost),
     free_delivery_from: num(data.free_delivery_from),
     sales_enabled: sales,
-    // Информационный сайт: телефона и почты нет нигде — ни на страницах, ни в разметке для поисковиков.
+    // Информационный сайт: ни телефона, ни почты, ни адреса — ни на страницах, ни в разметке для поисковиков.
     // В админке (Настройки) они хранятся как есть и вернутся на сайт вместе с продажами.
-    ...(sales ? {} : { phone: null, email: null }),
+    ...(sales ? {} : { phone: null, email: null, address: null }),
   } as Settings
 }
 
