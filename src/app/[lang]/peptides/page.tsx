@@ -201,7 +201,7 @@ export default async function PeptidesPage() {
         </div>
       </section>
 
-      <p className="mt-8 max-w-2xl text-sm text-mute">{p.disclaimer}</p>
+      {p.disclaimer && <p className="mt-8 max-w-2xl text-sm text-mute">{p.disclaimer}</p>}
     </div>
   )
 }

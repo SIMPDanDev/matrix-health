@@ -50,7 +50,6 @@ export function ConsultationPlanner({ services, hours, children }: { services: S
           <h2 className="text-[clamp(1.9rem,3.6vw,2.75rem)] leading-[1.08] font-bold tracking-[-0.03em]">{c.formTitle}</h2>
           <p className="mt-3 text-lg leading-relaxed text-ink-2">{c.formLead}</p>
           {hours && <p className="mt-1 text-mute">{hours}</p>}
-          <p className="mt-8 max-w-sm rounded-2xl bg-sand px-4 py-3 text-sm leading-relaxed text-ink-2">{c.disclaimer}</p>
         </div>
 
         <RequestForm

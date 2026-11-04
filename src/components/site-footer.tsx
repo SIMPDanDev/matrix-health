@@ -54,7 +54,6 @@ export async function SiteFooter() {
 
       <div className="border-t border-white/10">
         <div className={`${wrap} flex flex-wrap items-center gap-x-10 gap-y-3 py-6 text-[13px] leading-relaxed text-white/55 lg:justify-between`}>
-          <p className="max-w-2xl">{t.footer.disclaimer}</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             <Link href={path('/privacy')} className="hover:text-white">
               {t.nav.privacy}

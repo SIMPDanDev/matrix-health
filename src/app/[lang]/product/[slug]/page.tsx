@@ -243,7 +243,8 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
 function Paragraphs({ text }: { text: string }) {
   return (
     <div className="space-y-4 text-[17px] leading-[1.7] text-ink-2">
-      {text.split(/\n{2,}/).map((para) => (
+      {/* Тексты из админки приходят с \r\n — абзацы делим по пустой строке в любом формате */}
+      {text.split(/\r?\n(?:[ \t]*\r?\n)+/).map((para) => (
         <p key={para}>{para}</p>
       ))}
     </div>

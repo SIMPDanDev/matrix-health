@@ -68,8 +68,6 @@ const en = {
     catalog: 'Catalog',
     customers: 'Customers',
     contact: 'Get in touch',
-    disclaimer:
-      'The information on this website is for reference only and is not medical advice. Consult a doctor before use.',
   },
 
   banner: {
@@ -170,7 +168,6 @@ const en = {
     successTitle: 'Request received',
     successText: 'Request number {n}. The specialist will contact you during business hours{hours}.',
     another: 'Send another request',
-    disclaimer: 'The consultation does not replace a doctor’s appointment and is not a diagnosis.',
     empty: 'Services will appear here soon. In the meantime, call or message us — we will help you choose.',
     emptyInfo: 'Services will appear here soon.',
     errors: {

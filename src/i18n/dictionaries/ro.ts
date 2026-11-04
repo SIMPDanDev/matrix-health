@@ -66,8 +66,6 @@ const ro: Dictionary = {
     catalog: 'Catalog',
     customers: 'Pentru clienți',
     contact: 'Contactați-ne',
-    disclaimer:
-      'Informațiile de pe site au caracter informativ și nu constituie o recomandare medicală. Consultați un medic înainte de utilizare.',
   },
 
   banner: {
@@ -173,7 +171,6 @@ const ro: Dictionary = {
     successTitle: 'Cererea a fost primită',
     successText: 'Numărul cererii: {n}. Specialistul vă va contacta în timpul programului{hours}.',
     another: 'Trimiteți încă o cerere',
-    disclaimer: 'Consultația nu înlocuiește vizita la medic și nu reprezintă un diagnostic.',
     empty: 'Serviciile vor apărea în curând. Până atunci, sunați-ne sau scrieți-ne — vă ajutăm să alegeți.',
     emptyInfo: 'Serviciile vor apărea în curând.',
     errors: {
