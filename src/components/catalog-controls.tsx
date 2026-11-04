@@ -28,7 +28,7 @@ export function CatalogControls({
   facets: Facets
   options: { forms: FilterChoice[]; purposes: FilterChoice[] }
   total: number
-  /** false — режим витрины: без фильтра и сортировки по цене */
+  /** false — информационный сайт: без фильтра и сортировки по цене */
   prices?: boolean
   children: ReactNode
   /** Под сеткой товаров (страницы). Отдельной строкой — чтобы липкие фильтры останавливались на последнем ряду товаров */

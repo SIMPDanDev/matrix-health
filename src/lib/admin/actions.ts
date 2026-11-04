@@ -550,7 +550,7 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
   return { ok: true, message: 'Настройки сохранены — сайт уже обновился' }
 }
 
-/** Продажи на сайте: включены — цены, корзина и заказы; выключены — режим витрины */
+/** Продажи на сайте: включены — цены, корзина и заказы; выключены — информационный сайт */
 export async function setSalesEnabled(_prev: FormState, fd: FormData): Promise<FormState> {
   const { sb } = await requireAdmin()
   const enabled = fd.get('enabled') === '1'
@@ -562,6 +562,6 @@ export async function setSalesEnabled(_prev: FormState, fd: FormData): Promise<F
   refresh()
   return {
     ok: true,
-    message: enabled ? 'Продажи включены: цены, корзина и заказы уже на сайте' : 'Включён режим витрины: на сайте «Цена по запросу»',
+    message: enabled ? 'Продажи включены: цены, корзина и заказы уже на сайте' : 'Сайт стал информационным: без цен, корзины, телефона и почты',
   }
 }

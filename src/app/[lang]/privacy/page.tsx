@@ -14,9 +14,11 @@ export default async function PrivacyPage() {
   const { t, fmt } = i18n
   const p = t.privacy
 
+  // Информационный сайт: ни почты, ни телефона — просим обратиться по адресу или через консультацию
   const vars = {
-    email: s.email ?? p.ourEmail,
-    phone: s.phone ? fmt(p.phoneSuffix, { phone: s.phone }) : '',
+    contact: s.sales_enabled
+      ? fmt(p.contactSales, { email: s.email ?? p.ourEmail, phone: s.phone ? fmt(p.phoneSuffix, { phone: s.phone }) : '' })
+      : p.contactInfo,
   }
 
   return (

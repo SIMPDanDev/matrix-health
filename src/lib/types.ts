@@ -99,7 +99,7 @@ export type Settings = {
   free_delivery_from: number
   delivery_info: string | null
   payment_info: string | null
-  /** false — режим витрины: без цен, корзины и заказов (supabase/showcase.sql) */
+  /** false — информационный сайт: без цен, корзины, заказов, телефона и почты (supabase/showcase.sql) */
   sales_enabled: boolean
   translations?: Translations<SettingsText>
 }
@@ -155,7 +155,7 @@ export type Service = {
   name: string
   summary: string | null
   features: string[]
-  /** null — «цена по запросу» */
+  /** null — цена не указана: на сайте строки с ценой нет */
   price: number | null
   period: 'once' | 'month'
   sort: number

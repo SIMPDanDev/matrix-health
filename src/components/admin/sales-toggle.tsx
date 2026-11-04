@@ -5,7 +5,7 @@ import { setSalesEnabled } from '@/lib/admin/actions'
 import { btn } from '../ui'
 import { FormMessage } from './controls'
 
-/** Переключатель «продажи / витрина». installed — в базе уже есть поле из supabase/showcase.sql */
+/** Переключатель «продажи / информационный сайт». installed — в базе уже есть поле из supabase/showcase.sql */
 export function SalesToggle({ enabled, installed }: { enabled: boolean; installed: boolean }) {
   const [state, action, pending] = useActionState(setSalesEnabled, {})
 
@@ -13,14 +13,14 @@ export function SalesToggle({ enabled, installed }: { enabled: boolean; installe
     return (
       <p className="text-sm text-ink-2">
         <b className="text-signal">Нужно один раз выполнить SQL.</b> Откройте Supabase → SQL Editor и запустите файл{' '}
-        <code className="font-mono">supabase/showcase.sql</code> — сайт перейдёт в режим витрины, а здесь появится переключатель.
+        <code className="font-mono">supabase/showcase.sql</code> — сайт станет информационным, а здесь появится переключатель.
       </p>
     )
   }
 
   const toggle = () => {
     const question = enabled
-      ? 'Выключить продажи? Вместо цен будет «Цена по запросу», вместо заказа — запрос.'
+      ? 'Выключить продажи? Сайт станет информационным: без цен, корзины, телефона и почты.'
       : 'Включить продажи? На сайте появятся цены, корзина и оформление заказа.'
     if (!confirm(question)) return
     const fd = new FormData()
@@ -33,12 +33,12 @@ export function SalesToggle({ enabled, installed }: { enabled: boolean; installe
       <div className="max-w-xl text-sm">
         <p className="flex items-center gap-2 text-[15px] font-semibold">
           <span className={`size-2.5 rounded-full ${enabled ? 'bg-sage' : 'bg-signal'}`} />
-          {enabled ? 'Продажи включены' : 'Режим витрины'}
+          {enabled ? 'Продажи включены' : 'Информационный сайт'}
         </p>
         <p className="mt-1.5 leading-relaxed text-ink-2">
           {enabled
             ? 'На сайте видны цены, работают корзина и оформление заказа.'
-            : 'На сайте «Цена по запросу». Покупатель собирает товары в список и отправляет запрос — он приходит в «Заявки» и в Telegram, дальше вы перезваниваете. Цены товаров в админке сохраняются и вернутся на сайт, когда вы включите продажи.'}
+            : 'На сайте только описания товаров, состав и документы: нет цен, корзины и заказа, не показываются телефон и почта. Цены, остатки и контакты в админке сохраняются и вернутся на сайт, когда вы включите продажи.'}
         </p>
         <div className="mt-2">
           <FormMessage state={state} />

@@ -66,7 +66,7 @@ export async function placeOrder(_prev: CheckoutState, fd: FormData): Promise<Ch
   if (!items.length) return { error: 'cartEmpty' }
 
   if (!isSupabaseConfigured) return { error: 'notConnected' }
-  // Режим витрины: заказы не принимаются (база тоже не пропустит — supabase/showcase.sql)
+  // Информационный сайт: заказы не принимаются (база тоже не пропустит — supabase/showcase.sql)
   if (!(await getSettings()).sales_enabled) return { error: 'closed' }
 
   const { data, error } = await createPublicClient().rpc('place_order', { p_customer: customer, p_items: items })

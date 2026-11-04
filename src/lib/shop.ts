@@ -21,7 +21,7 @@ export async function getShop() {
 
 export async function getShopServices() {
   const [i18n, services, settings] = await Promise.all([getI18n(), getServices(), getSettings()])
-  // В режиме витрины цены услуг не показываем — везде «Цена по запросу»
+  // Информационный сайт: цены услуг не показываем совсем, сами консультации остаются
   return services.map((s) => localizeService(settings.sales_enabled ? s : { ...s, price: null }, i18n.lang))
 }
 

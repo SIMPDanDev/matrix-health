@@ -108,12 +108,16 @@ export async function getSettings(): Promise<Settings> {
   const { data } = await createPublicClient().from('settings').select('*').eq('id', 1).maybeSingle()
   if (!data) return EMPTY_SETTINGS
 
+  const sales = data.sales_enabled !== false
   return {
     ...EMPTY_SETTINGS,
     ...Object.fromEntries(Object.entries(data).filter(([, v]) => v !== null && v !== '')),
     delivery_cost: num(data.delivery_cost),
     free_delivery_from: num(data.free_delivery_from),
-    sales_enabled: data.sales_enabled !== false,
+    sales_enabled: sales,
+    // Информационный сайт: телефона и почты нет нигде — ни на страницах, ни в разметке для поисковиков.
+    // В админке (Настройки) они хранятся как есть и вернутся на сайт вместе с продажами.
+    ...(sales ? {} : { phone: null, email: null }),
   } as Settings
 }
 

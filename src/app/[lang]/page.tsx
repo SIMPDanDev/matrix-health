@@ -233,13 +233,11 @@ export default async function HomePage() {
                       <span className="block text-lg leading-snug font-semibold">{sv.name}</span>
                       {sv.summary && <span className="mt-1 block text-[15px] leading-snug text-ink-2">{sv.summary}</span>}
                     </span>
-                    <span className="shrink-0 text-right font-semibold whitespace-nowrap text-cream-ink tabular-nums">
-                      {sv.price === null
-                        ? t.consultation.priceOnRequest
-                        : sv.period === 'month'
-                          ? `${money(sv.price)} ${t.consultation.perMonth}`
-                          : money(sv.price)}
-                    </span>
+                    {sv.price !== null && (
+                      <span className="shrink-0 text-right font-semibold whitespace-nowrap text-cream-ink tabular-nums">
+                        {sv.period === 'month' ? `${money(sv.price)} ${t.consultation.perMonth}` : money(sv.price)}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}

@@ -68,7 +68,7 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
             ...(p.category ? [{ name: p.category.name, path: `/catalog?cat=${p.category.slug}` }] : []),
             { name: p.name, path: `/product/${p.slug}` },
           ]),
-          // Разметка товара с ценой — только когда продажи включены: при «Цене по запросу» цены в ней быть не должно
+          // Разметка товара с ценой — только когда продажи включены: на информационном сайте цен нет
           ...(settings.sales_enabled ? [productSchema(lang, p, settings.store_name)] : []),
         ]}
       />
@@ -111,14 +111,12 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
             )}
           </p>
 
-          <div className="mt-6">
-            {settings.sales_enabled ? (
+          {/* Информационный сайт: ни цены, ни корзины — цены не попадают даже в браузер */}
+          {settings.sales_enabled && (
+            <div className="mt-6">
               <BuyBox product={p} />
-            ) : (
-              // Режим витрины: «Цена по запросу». Цены обнуляем, чтобы они не попали в браузер
-              <BuyBox inquiry product={{ ...p, price: 0, old_price: null, variants: p.variants.map((v) => ({ ...v, price: 0 })) }} />
-            )}
-          </div>
+            </div>
+          )}
 
           <ul className="mt-5 grid gap-3 text-sm text-ink-2 sm:grid-cols-3">
             <li className="flex items-start gap-2">

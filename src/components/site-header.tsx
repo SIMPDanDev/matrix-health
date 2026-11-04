@@ -97,7 +97,7 @@ export async function SiteHeader() {
             </Suspense>
           </div>
 
-          <CartLink inquiry={!settings.sales_enabled} />
+          {settings.sales_enabled && <CartLink />}
           <MobileMenu
             items={mobileNav}
             phone={settings.phone}

@@ -23,11 +23,14 @@ export function ProductForm({
   product,
   categories,
   filters,
+  qr,
 }: {
   product: Product | null
   categories: Category[]
   /** Варианты из Админка → Фильтры (включая скрытые) */
   filters: FilterOption[]
+  /** Блок с QR-кодом для этикетки — только у сохранённого товара (см. QrPanel) */
+  qr?: ReactNode
 }) {
   const p = product
   const forms = filters.filter((f) => f.kind === 'form')
@@ -124,6 +127,8 @@ export function ProductForm({
             </div>
           )}
         </Box>
+
+        {qr && <Box title="QR-код для этикетки">{qr}</Box>}
 
         <Box title="Цена и наличие">
           <div className="grid grid-cols-2 gap-3">

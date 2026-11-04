@@ -41,7 +41,7 @@ export default function CatalogPage(props: PageProps<'/[lang]/catalog'>) {
 async function CatalogView({ searchParams }: Pick<PageProps<'/[lang]/catalog'>, 'searchParams'>) {
   const { i18n, catalog, settings } = await getShop()
   const parsed = parseFilters(await searchParams)
-  // В режиме витрины цен на сайте нет — фильтр и сортировка по цене не работают
+  // На информационном сайте цен нет — фильтр и сортировка по цене не работают
   const filters: Filters = settings.sales_enabled
     ? parsed
     : { ...parsed, min: null, max: null, sort: PRICE_SORTS.includes(parsed.sort) ? 'popular' : parsed.sort }

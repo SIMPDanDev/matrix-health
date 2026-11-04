@@ -9,7 +9,7 @@ export const SORTS = [
 
 export type SortId = (typeof SORTS)[number]['id']
 
-/** Сортировки по цене — в режиме витрины их нет */
+/** Сортировки по цене — на информационном сайте их нет */
 export const PRICE_SORTS: readonly SortId[] = ['cheap', 'expensive']
 
 export const DOC_TYPES = ['COA', 'HPLC', 'Соответствие', 'Другое'] as const
@@ -57,11 +57,10 @@ export const REQUEST_STATUSES = [
 export type RequestStatus = (typeof REQUEST_STATUSES)[number]['id']
 
 /** Как клиенту удобнее, чтобы с ним связались */
-export const CONTACT_METHODS = ['phone', 'viber', 'whatsapp'] as const
+export const CONTACT_METHODS = ['phone', 'telegram', 'viber', 'whatsapp'] as const
 
 export type ContactMethod = (typeof CONTACT_METHODS)[number]
 
-// Telegram — для старых заявок, на сайте его больше нет
 export const CONTACT_LABELS: Record<string, string> = {
   phone: 'Звонок',
   telegram: 'Telegram',

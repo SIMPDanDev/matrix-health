@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AdminTitle } from '@/components/admin/parts'
 import { ProductForm } from '@/components/admin/product-form'
+import { QrPanel } from '@/components/admin/qr-panel'
 import { IconArrowLeft } from '@/components/icons'
 import { requireAdmin } from '@/lib/admin/auth'
 import { getAdminFilters } from '@/lib/admin/filters'
@@ -35,7 +36,13 @@ export default async function EditProductPage(props: PageProps<'/admin/products/
         </p>
       )}
 
-      <ProductForm key={product.updated_at ?? product.id} product={product} categories={(cats ?? []) as Category[]} filters={filters} />
+      <ProductForm
+        key={product.updated_at ?? product.id}
+        product={product}
+        categories={(cats ?? []) as Category[]}
+        filters={filters}
+        qr={<QrPanel slug={product.slug} />}
+      />
     </>
   )
 }

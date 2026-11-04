@@ -66,10 +66,10 @@ export function ConsultationPlanner({ services, hours, children }: { services: S
   )
 }
 
+/** Цена услуги строкой. null — цены нет (или сайт информационный): ничего не показываем */
 function usePrice() {
   const { t, money } = useI18n()
-  return (s: Service) =>
-    s.price === null ? t.consultation.priceOnRequest : s.period === 'month' ? `${money(s.price)} ${t.consultation.perMonth}` : money(s.price)
+  return (s: Service) => (s.price === null ? null : s.period === 'month' ? `${money(s.price)} ${t.consultation.perMonth}` : money(s.price))
 }
 
 function ServiceCard({ service: s, selected, onChoose }: { service: Service; selected: boolean; onChoose: () => void }) {
@@ -106,13 +106,13 @@ function ServiceCard({ service: s, selected, onChoose }: { service: Service; sel
       {/* Распорка: цена и кнопка прижаты к низу карточки, но не ближе 2rem к тексту */}
       <div className="min-h-8 flex-1" />
       <div className={`flex flex-wrap items-end justify-between gap-4 border-t pt-6 ${dark ? 'border-white/15' : 'border-periwinkle-ink/15'}`}>
-        {s.price === null ? (
-          <p className="text-xl font-semibold">{c.priceOnRequest}</p>
-        ) : (
+        {s.price !== null ? (
           <p className="flex items-baseline gap-1.5">
             <span className="text-[40px] leading-none font-bold tracking-[-0.03em] tabular-nums">{money(s.price)}</span>
             {dark && <span className="text-white/70">{c.perMonth}</span>}
           </p>
+        ) : (
+          <span />
         )}
         <button
           type="button"
@@ -200,7 +200,7 @@ function RequestForm({
               >
                 <input type="radio" name="service_id" value={s.id} checked={selected === s.id} onChange={() => onSelect(s.id)} className="sr-only" />
                 <span className="leading-snug font-medium">{s.name}</span>
-                <span className="mt-1 text-sm text-mute tabular-nums">{priceOf(s)}</span>
+                {s.price !== null && <span className="mt-1 text-sm text-mute tabular-nums">{priceOf(s)}</span>}
               </label>
             ))}
           </div>

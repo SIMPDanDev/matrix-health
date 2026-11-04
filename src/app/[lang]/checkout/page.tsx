@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CheckoutPage() {
   const { i18n, settings: s } = await getShop()
   const { t, path } = i18n
-  // Режим витрины: заказов нет, вместо них — запрос цены на странице корзины
-  if (!s.sales_enabled) redirect(path('/cart'))
+  // Информационный сайт: заказов нет — в каталог
+  if (!s.sales_enabled) redirect(path('/catalog'))
 
   return (
     <div className={`${wrap} pt-6 lg:pt-8`}>

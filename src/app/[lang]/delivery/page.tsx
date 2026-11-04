@@ -16,7 +16,7 @@ export default async function DeliveryPage() {
   const paid = s.free_delivery_from > 0 ? fmt(d.price, { cost: money(s.delivery_cost), free: money(s.free_delivery_from) }) : money(s.delivery_cost)
 
   // Доставляет только курьер магазина
-  // В режиме витрины без стоимости доставки и способов оплаты
+  // Информационный сайт: без стоимости доставки и способов оплаты
   const methods = [{ title: d.courierTitle, time: d.courierTime, price: s.sales_enabled ? paid : null, text: d.courierText }]
 
   return (

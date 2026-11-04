@@ -61,7 +61,7 @@ export async function ProductCard({ product, hasDocs }: { product: Product; hasD
         </p>
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-4">
-          {sales ? (
+          {sales && (
             <div className="flex flex-col leading-tight">
               {product.old_price && product.old_price > price && (
                 <span className="text-[13px] text-mute line-through tabular-nums">{money(product.old_price)}</span>
@@ -71,11 +71,21 @@ export async function ProductCard({ product, hasDocs }: { product: Product; hasD
                 {money(price)}
               </span>
             </div>
-          ) : (
-            <span className="text-[15px] leading-tight font-semibold text-ink-2">{t.showcase.priceOnRequest}</span>
           )}
 
-          {available &&
+          {/* Информационный сайт: ни цены, ни кнопки добавления — только переход к описанию */}
+          {!sales && (
+            <Link
+              href={href}
+              aria-label={fmt(t.product.detailsAria, { name: product.name })}
+              className="ml-auto inline-flex h-10 items-center gap-1.5 rounded-full border border-line-strong px-4 text-sm font-medium hover:border-brand hover:text-brand"
+            >
+              {t.product.details} <IconArrow size={16} />
+            </Link>
+          )}
+
+          {sales &&
+            available &&
             (product.variants.length > 1 ? (
               <Link
                 href={href}
@@ -88,15 +98,13 @@ export async function ProductCard({ product, hasDocs }: { product: Product; hasD
             ) : (
               <QuickAdd
                 name={product.name}
-                inquiry={!sales}
                 line={{
                   productId: product.id,
                   variantId: product.variants[0]?.id ?? null,
                   variantLabel: product.variants[0]?.label ?? null,
                   slug: product.slug,
                   name: product.name,
-                  // В режиме витрины цена не попадает ни на страницу, ни в браузер
-                  price: sales ? price : 0,
+                  price,
                   image: product.images[0] ?? null,
                   form: product.form,
                   tone: product.category?.sort ?? null,

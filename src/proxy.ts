@@ -14,6 +14,16 @@ export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return protectAdmin(request)
 
+  // Короткая ссылка из QR-кода на этикетке: /P/SELANK → /product/selank (дальше — язык как обычно).
+  // В QR она записана большими буквами, так код получается мельче — см. lib/qr.ts
+  const qr = /^\/p\/([a-z0-9-]+)\/?$/i.exec(pathname)
+  if (qr) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/product/${qr[1].toLowerCase()}`
+    url.search = ''
+    return NextResponse.redirect(url) // 307: ссылка на этикетке навсегда, а адрес товара может поменяться
+  }
+
   const first = pathname.split('/')[1]
 
   // /en/... — дубль английской версии: навсегда ведём на адрес без префикса
