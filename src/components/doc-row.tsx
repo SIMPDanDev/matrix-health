@@ -2,7 +2,8 @@ import { getI18n } from '@/i18n/server'
 import type { Certificate } from '@/lib/types'
 import { IconDownload, IconFile } from './icons'
 
-export async function DocRow({ cert }: { cert: Certificate }) {
+/** doses — названия дозировок, к которым относится документ (пусто — для всех) */
+export async function DocRow({ cert, doses = [] }: { cert: Certificate; doses?: string[] }) {
   const { t, date } = await getI18n()
 
   return (
@@ -14,7 +15,10 @@ export async function DocRow({ cert }: { cert: Certificate }) {
         <p className="font-medium">
           {cert.title} <span className="text-mute">· {t.docTypes[cert.doc_type] ?? cert.doc_type}</span>
         </p>
-        <p className="mt-0.5 truncate text-sm text-mute">{cert.lab ?? '—'}</p>
+        <p className="mt-0.5 truncate text-sm text-mute">
+          {cert.lab ?? '—'}
+          {doses.length > 0 && <span className="text-ink-2"> · {doses.join(', ')}</span>}
+        </p>
       </div>
       <span className="col-start-2 font-mono text-sm text-ink-2 sm:col-start-auto">
         {cert.batch ? `LOT ${cert.batch}` : t.product.noBatch}

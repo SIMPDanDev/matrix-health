@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { BuyBox } from '@/components/buy-box'
-import { BuyBoxFromUrl, DosePicker, DosePickerFromUrl } from '@/components/dose-picker'
+import { BuyBoxFromUrl, DoseDocs, DoseDocsFromUrl, DosePicker, DosePickerFromUrl } from '@/components/dose-picker'
 import { DocRow } from '@/components/doc-row'
 import { JsonLd } from '@/components/json-ld'
 import { IconShield, IconSnow, IconTruck } from '@/components/icons'
@@ -14,6 +14,7 @@ import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { getSettings } from '@/lib/data'
 import { filterName } from '@/lib/filters'
+import { doseLabels } from '@/lib/variants'
 import { breadcrumbSchema, productSchema, snippet } from '@/lib/seo'
 import { getShop, getShopProduct, shopMeta } from '@/lib/shop'
 
@@ -56,6 +57,15 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
   const withDocs = new Set(catalog.certificates.map((c) => c.product_id))
   // Для выбора дозировки на информационном сайте — только название, без цены и остатка
   const doses = p.variants.map((v) => ({ id: v.id, label: v.label }))
+  // Дозировка, выбранная по умолчанию, — как у кнопок: при продажах первая в наличии, иначе первая
+  const defaultDose =
+    (settings.sales_enabled ? (p.variants.find((v) => v.stock > 0) ?? p.variants[0]) : p.variants[0])?.id ?? null
+  const docRows = certificates.map((c) => ({
+    key: c.id,
+    variantIds: c.variant_ids ?? [],
+    node: <DocRow cert={c} doses={doseLabels(c.variant_ids, p.variants)} />,
+  }))
+  const noDocs = <p className="text-ink-2">{settings.sales_enabled ? t.product.docsMissing : t.product.docsMissingInfo}</p>
   const isCold = p.form === 'vials' || p.specs.some((s) => /\+2|\+8/.test(s.value))
 
   const sections = [
@@ -223,15 +233,10 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
           )}
 
           <Section id="docs" title={t.product.sectionDocuments}>
-            {certificates.length > 0 ? (
-              <ul className="border-t border-line-strong">
-                {certificates.map((c) => (
-                  <DocRow key={c.id} cert={c} />
-                ))}
-              </ul>
-            ) : (
-              <p className="text-ink-2">{settings.sales_enabled ? t.product.docsMissing : t.product.docsMissingInfo}</p>
-            )}
+            {/* Документы выбранной дозировки: у сертификата можно отметить одну или несколько дозировок, без отметки — для всех */}
+            <Suspense fallback={<DoseDocs rows={docRows} selectedId={defaultDose} empty={noDocs} />}>
+              <DoseDocsFromUrl rows={docRows} variants={doses} defaultId={defaultDose} empty={noDocs} />
+            </Suspense>
             <Link href={path('/certificates')} className="mt-5 inline-block text-[15px] font-medium text-brand hover:underline">
               {t.product.allCertificates} →
             </Link>

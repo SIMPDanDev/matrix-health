@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { startTransition, useActionState } from 'react'
+import { startTransition, useActionState, useState } from 'react'
 import { deleteCertificate, saveCertificate } from '@/lib/admin/actions'
 import { DOC_TYPES } from '@/lib/constants'
 import type { Certificate } from '@/lib/types'
@@ -9,10 +9,26 @@ import { IconFile } from '../icons'
 import { btn, checkbox, input, label } from '../ui'
 import { DeleteButton, FormMessage } from './controls'
 
-type Opt = { id: string; name: string; batch: string | null }
+type Opt = { id: string; name: string; batch: string | null; variants?: { id: string; label: string; sort: number }[] }
 
-export function CertificateForm({ cert, products }: { cert: Certificate | null; products: Opt[] }) {
+/**
+ * productId — товар, выбранный заранее (кнопка «Добавить сертификат» в карточке товара);
+ * returnTo — куда вернуться после сохранения
+ */
+export function CertificateForm({
+  cert,
+  products,
+  productId,
+  returnTo,
+}: {
+  cert: Certificate | null
+  products: Opt[]
+  productId?: string | null
+  returnTo?: string | null
+}) {
   const [state, action, pending] = useActionState(saveCertificate, {})
+  const [product, setProduct] = useState(cert?.product_id ?? productId ?? '')
+  const doses = [...(products.find((p) => p.id === product)?.variants ?? [])].sort((a, b) => a.sort - b.sort)
 
   return (
     <form
@@ -25,10 +41,11 @@ export function CertificateForm({ cert, products }: { cert: Certificate | null; 
     >
       <input type="hidden" name="id" value={cert?.id ?? ''} />
       <input type="hidden" name="file_url" value={cert?.file_url ?? ''} />
+      {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
       <label className="block">
         <span className={label}>Товар</span>
-        <select name="product_id" defaultValue={cert?.product_id ?? ''} className={input}>
+        <select name="product_id" value={product} onChange={(e) => setProduct(e.target.value)} className={input}>
           <option value="">Не привязан к товару</option>
           {products.map((p) => (
             <option key={p.id} value={p.id}>
@@ -38,6 +55,32 @@ export function CertificateForm({ cert, products }: { cert: Certificate | null; 
           ))}
         </select>
       </label>
+
+      {/* Дозировки — только если у выбранного товара они есть. Ничего не отмечено — документ для всех */}
+      {doses.length > 0 && (
+        <fieldset key={product}>
+          <legend className={label}>Для каких дозировок</legend>
+          {/* Метка: дозировки в форме есть — сохранить их выбор (в том числе «все») */}
+          <input type="hidden" name="has_doses" value="on" />
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            {doses.map((v) => (
+              <label key={v.id} className="flex cursor-pointer items-center gap-2 text-[15px]">
+                <input
+                  type="checkbox"
+                  name="variant_ids"
+                  value={v.id}
+                  defaultChecked={cert?.product_id === product && (cert.variant_ids ?? []).includes(v.id)}
+                  className={checkbox}
+                />
+                {v.label}
+              </label>
+            ))}
+          </div>
+          <span className="mt-1 block text-xs text-mute">
+            Можно отметить несколько. Ничего не отмечено — документ для всех дозировок товара.
+          </span>
+        </fieldset>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-[1fr_180px]">
         <label className="block">
@@ -115,7 +158,7 @@ export function CertificateForm({ cert, products }: { cert: Certificate | null; 
         <button type="submit" disabled={pending} className={btn.smallPrimary}>
           {pending ? 'Сохраняем…' : cert ? 'Сохранить' : 'Добавить документ'}
         </button>
-        <Link href="/admin/certificates" className="text-sm text-mute hover:text-ink">
+        <Link href={returnTo ?? '/admin/certificates'} className="text-sm text-mute hover:text-ink">
           Отмена
         </Link>
         <FormMessage state={state} />

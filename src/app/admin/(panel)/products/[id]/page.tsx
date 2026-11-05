@@ -2,12 +2,13 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AdminTitle } from '@/components/admin/parts'
 import { ProductForm } from '@/components/admin/product-form'
+import { ProductDocs } from '@/components/admin/product-docs'
 import { QrPanel } from '@/components/admin/qr-panel'
 import { IconArrowLeft } from '@/components/icons'
 import { requireAdmin } from '@/lib/admin/auth'
 import { getAdminFilters } from '@/lib/admin/filters'
 import { normalizeProduct } from '@/lib/data'
-import type { Category } from '@/lib/types'
+import type { Category, Certificate } from '@/lib/types'
 
 export const metadata = { title: 'Товар' }
 
@@ -15,10 +16,11 @@ export default async function EditProductPage(props: PageProps<'/admin/products/
   const { sb } = await requireAdmin()
   const [{ id }, { saved }] = await Promise.all([props.params, props.searchParams])
 
-  const [{ data }, { data: cats }, { filters }] = await Promise.all([
+  const [{ data }, { data: cats }, { filters }, { data: docs }] = await Promise.all([
     sb.from('products').select('*, category:categories(*), variants:product_variants(*)').eq('id', id).maybeSingle(),
     sb.from('categories').select('*').order('sort'),
     getAdminFilters(sb),
+    sb.from('certificates').select('*').eq('product_id', id).order('issued_at', { ascending: false, nullsFirst: false }),
   ])
   if (!data) notFound()
   const product = normalizeProduct(data)
@@ -32,7 +34,12 @@ export default async function EditProductPage(props: PageProps<'/admin/products/
 
       {saved && (
         <p role="status" className="mb-6 rounded-md bg-brand-soft px-4 py-3 text-sm text-brand-dark">
-          ✓ {saved === 'created' ? 'Товар создан и уже на сайте (если включена публикация).' : 'Изменения сохранены — сайт обновился.'}
+          ✓{' '}
+          {saved === 'created'
+            ? 'Товар создан и уже на сайте (если включена публикация).'
+            : saved === 'doc'
+              ? 'Документ сохранён — он уже на странице товара.'
+              : 'Изменения сохранены — сайт обновился.'}
         </p>
       )}
 
@@ -42,6 +49,7 @@ export default async function EditProductPage(props: PageProps<'/admin/products/
         categories={(cats ?? []) as Category[]}
         filters={filters}
         qr={<QrPanel slug={product.slug} variants={product.variants} />}
+        docs={<ProductDocs productId={product.id} docs={(docs ?? []) as Certificate[]} variants={product.variants} />}
       />
     </>
   )

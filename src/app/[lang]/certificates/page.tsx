@@ -9,6 +9,7 @@ import { getI18n } from '@/i18n/server'
 import { telHref } from '@/lib/format'
 import { getShop, shopMeta } from '@/lib/shop'
 import type { Certificate } from '@/lib/types'
+import { doseLabels } from '@/lib/variants'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n()
@@ -150,9 +151,15 @@ async function Registry({ searchParams }: Pick<PageProps<'/[lang]/certificates'>
                   </td>
                   <td className="col-span-2 md:px-5 md:py-4">
                     {c.product ? (
-                      <Link href={path(`/product/${c.product.slug}`)} className="hover:text-brand hover:underline">
-                        {c.product.name}
-                      </Link>
+                      <>
+                        <Link href={path(`/product/${c.product.slug}`)} className="hover:text-brand hover:underline">
+                          {c.product.name}
+                        </Link>
+                        {/* Дозировки, к которым относится документ (пусто — для всех) */}
+                        {doseLabels(c.variant_ids, c.product.variants).length > 0 && (
+                          <span className="text-mute"> · {doseLabels(c.variant_ids, c.product.variants).join(', ')}</span>
+                        )}
+                      </>
                     ) : (
                       <span className="text-mute">—</span>
                     )}

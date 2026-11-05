@@ -66,6 +66,8 @@ function dbError(message: string) {
     return 'В базе нет таблицы фильтров. Выполните supabase/filters.sql в Supabase → SQL Editor.'
   if (/sales_enabled/i.test(message))
     return 'В базе нет переключателя продаж. Выполните supabase/showcase.sql в Supabase → SQL Editor.'
+  if (/variant_ids/i.test(message))
+    return 'В базе нет поля для дозировок сертификата. Выполните supabase/certificate-doses.sql в Supabase → SQL Editor.'
   if (/translations/i.test(message)) return 'В базе нет поля для переводов. Выполните supabase/i18n.sql в Supabase → SQL Editor.'
   if (/duplicate key.*slug/i.test(message)) return 'Такой адрес (slug) уже занят — измените его.'
   if (/row-level security/i.test(message)) return 'Нет прав. Проверьте, что ваш пользователь добавлен в таблицу admins.'
@@ -262,9 +264,15 @@ export async function saveCertificate(_prev: FormState, fd: FormData): Promise<F
   }
 
   const docType = str(fd, 'doc_type')
-  const row = {
+  const productId = strOrNull(fd, 'product_id')
+  // Дозировки пишем, только когда они были в форме (у товара есть варианты): ничего не отмечено — для всех.
+  // У товаров без дозировок поле не трогаем — так сертификаты сохраняются и до supabase/certificate-doses.sql
+  const doses: { variant_ids?: string[] } =
+    productId && bool(fd, 'has_doses') ? { variant_ids: fd.getAll('variant_ids').map(String).filter(Boolean) } : {}
+  const row: Record<string, unknown> = {
     title,
-    product_id: strOrNull(fd, 'product_id'),
+    product_id: productId,
+    ...doses,
     doc_type: (DOC_TYPES as readonly string[]).includes(docType) ? docType : 'Другое',
     batch: strOrNull(fd, 'batch'),
     issued_at: strOrNull(fd, 'issued_at'),
@@ -278,7 +286,9 @@ export async function saveCertificate(_prev: FormState, fd: FormData): Promise<F
   if (res.error) return { error: dbError(res.error.message) }
 
   updateTag(CATALOG_TAG)
-  redirect('/admin/certificates?saved=1')
+  // Добавляли из карточки товара — туда и возвращаемся
+  const back = str(fd, 'return_to')
+  redirect(back.startsWith('/admin/products/') ? `${back}?saved=doc` : '/admin/certificates?saved=1')
 }
 
 export async function deleteCertificate(id: string) {

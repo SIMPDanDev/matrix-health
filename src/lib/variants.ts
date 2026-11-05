@@ -44,3 +44,12 @@ export function rememberDose(variants: { id: string; label: string }[], id: stri
   else url.searchParams.delete('dose')
   window.history.replaceState(window.history.state, '', url)
 }
+
+/** Названия дозировок, к которым относится сертификат, в порядке вариантов. Пусто — документ для всех дозировок */
+export function doseLabels(variantIds: string[] | null | undefined, variants: { id: string; label: string; sort?: number }[] = []) {
+  if (!variantIds?.length) return []
+  return [...variants]
+    .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+    .filter((v) => variantIds.includes(v.id))
+    .map((v) => v.label)
+}

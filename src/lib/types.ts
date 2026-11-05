@@ -76,12 +76,15 @@ export type Certificate = {
   file_url: string | null
   is_published: boolean
   created_at: string
+  /** К каким дозировкам (product_variants.id) относится документ. Пусто — ко всем (supabase/certificate-doses.sql) */
+  variant_ids?: string[]
   translations?: Translations<CertificateText>
   product: {
     slug: string
     name: string
     translations?: Translations<ProductText>
     category: { slug: string } | null
+    variants?: Pick<Variant, 'id' | 'label' | 'sort'>[]
   } | null
 }
 

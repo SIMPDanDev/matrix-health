@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
 import { useI18n } from '@/i18n/client'
 import type { Product, Variant } from '@/lib/types'
 import { findVariantByCode, rememberDose } from '@/lib/variants'
@@ -51,4 +51,35 @@ export function BuyBoxFromUrl({ product }: { product: Product }) {
   const dose = useSearchParams().get('dose')
   const initial = findVariantByCode(product.variants, dose)
   return <BuyBox key={initial?.id ?? 'default'} product={product} initialVariantId={initial?.id} />
+}
+
+type DocRowItem = { key: string; variantIds: string[]; node: ReactNode }
+
+/** Документы для выбранной дозировки: без отметки дозировок — для всех, иначе — только для отмеченных */
+export function DoseDocs({ rows, selectedId, empty }: { rows: DocRowItem[]; selectedId: string | null; empty: ReactNode }) {
+  const shown = rows.filter((r) => !selectedId || !r.variantIds.length || r.variantIds.includes(selectedId))
+  if (!shown.length) return <>{empty}</>
+  return (
+    <ul className="border-t border-line-strong">
+      {shown.map((r) => (
+        <Fragment key={r.key}>{r.node}</Fragment>
+      ))}
+    </ul>
+  )
+}
+
+/** DoseDocs с дозировкой из ссылки (?dose=…); без неё — дозировка по умолчанию, как у кнопок выбора. Оборачивайте в Suspense */
+export function DoseDocsFromUrl({
+  variants,
+  defaultId,
+  ...props
+}: {
+  rows: DocRowItem[]
+  empty: ReactNode
+  variants: Dose[]
+  defaultId: string | null
+}) {
+  const dose = useSearchParams().get('dose')
+  const selected = findVariantByCode(variants, dose)?.id ?? defaultId
+  return <DoseDocs {...props} selectedId={selected} />
 }
