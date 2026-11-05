@@ -46,6 +46,7 @@ export async function requestService(_prev: RequestState, fd: FormData): Promise
 
   if (error) {
     // Тексты ошибок request_service — на русском; переводим известные в коды
+    if (/Слишком много/i.test(error.message)) return { error: 'busy' }
     if (/недоступна/i.test(error.message)) return { error: 'unavailable' }
     if (/имя/i.test(error.message)) return { error: 'check', fields: { customer_name: 'name' } }
     if (/телефон/i.test(error.message)) return { error: 'check', fields: { phone: 'phone' } }

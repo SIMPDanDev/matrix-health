@@ -10,7 +10,28 @@ function supabaseImages() {
   }
 }
 
+// Заголовки безопасности для всех ответов сайта и админки
+const SECURITY_HEADERS = [
+  // Только HTTPS, два года, включая поддомены
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  // Сайт нельзя встроить в чужую страницу (защита от «кликджекинга»); плагины и чужой <base> запрещены;
+  // формы отправляются только на наш сайт
+  { key: 'Content-Security-Policy', value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  // Браузер не угадывает тип файла — картинка не исполнится как скрипт
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  // Чужим сайтам — только адрес домена, без страниц и параметров
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  // Камера, микрофон, геолокация и т.п. сайту не нужны
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()' },
+]
+
 const nextConfig: NextConfig = {
+  // Не сообщаем, на чём сделан сайт
+  poweredByHeader: false,
+  async headers() {
+    return [{ source: '/:path*', headers: SECURITY_HEADERS }]
+  },
   cacheComponents: true,
   partialPrefetching: true,
   images: {

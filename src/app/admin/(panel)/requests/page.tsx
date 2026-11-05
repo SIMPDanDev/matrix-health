@@ -3,7 +3,7 @@ import { AdminTitle, Empty } from '@/components/admin/parts'
 import { RequestNote, RequestStatusSelect } from '@/components/admin/request-controls'
 import { requireAdmin } from '@/lib/admin/auth'
 import { CONTACT_LABELS, REQUEST_STATUSES } from '@/lib/constants'
-import { dateTime, eur, orderNo } from '@/lib/format'
+import { dateTime, eur, orderNo, telHref } from '@/lib/format'
 import type { ServiceRequest } from '@/lib/types'
 
 export const metadata = { title: 'Заявки' }
@@ -101,7 +101,7 @@ export default async function RequestsPage(props: PageProps<'/admin/requests'>) 
                   <span className="font-mono">№{orderNo(r.number)}</span> · {dateTime(r.created_at)}
                 </p>
                 <p className="mt-1 font-semibold">{r.customer_name}</p>
-                <a href={`tel:${r.phone}`} className="block text-ink-2 tabular-nums hover:text-ink">
+                <a href={telHref(r.phone)} className="block text-ink-2 tabular-nums hover:text-ink">
                   {r.phone}
                 </a>
                 <a

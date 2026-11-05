@@ -1,4 +1,5 @@
 import 'server-only'
+import { defang } from './defang'
 import { headers } from 'next/headers'
 import { CONTACT_LABELS, PAYMENT_LABELS } from './constants'
 import { eur, orderNo } from './format'
@@ -74,7 +75,10 @@ export async function recentChats(): Promise<TelegramChat[]> {
 
 const LANG_NAMES: Record<string, string> = { en: 'английский', ro: 'румынский', ru: 'русский' }
 
-const line = (label: string, value: string | null | undefined) => (value ? `• ${label}: ${esc(value)}` : null)
+// Текст от посетителя — с обезвреженными ссылками (см. lib/defang.ts): Telegram сам делает их кликабельными.
+// raw — проверенное значение (email из формы заказа), его оставляем как есть
+const line = (label: string, value: string | null | undefined, raw = false) =>
+  value ? `• ${label}: ${esc(raw ? value : defang(value))}` : null
 const block = (...rows: (string | null | false | undefined)[]) => rows.filter(Boolean).join('\n')
 
 export type OrderNotice = {
@@ -99,7 +103,7 @@ export function orderMessage(o: OrderNotice) {
       '👤 <b>Покупатель</b>',
       line('Имя', c.name),
       line('Телефон', c.phone),
-      line('Email', c.email && c.email + (o.emailSent === true ? ' (письмо с заказом отправлено)' : o.emailSent === false ? ' (письмо не отправилось)' : '')),
+      line('Email', c.email && c.email + (o.emailSent === true ? ' (письмо с заказом отправлено)' : o.emailSent === false ? ' (письмо не отправилось)' : ''), true),
       line('Язык сайта', LANG_NAMES[o.lang]),
     ),
     block('📍 <b>Доставка</b>', line('Город', c.city), line('Адрес', c.address)),
@@ -118,7 +122,7 @@ export function orderMessage(o: OrderNotice) {
       `• <b>Итого к оплате: ${eur(subtotal + o.delivery)}</b>`,
       payment && `• Оплата: ${payment.toLowerCase()}`,
     ),
-    c.comment && block('💬 <b>Комментарий</b>', `<i>${esc(c.comment)}</i>`),
+    c.comment && block('💬 <b>Комментарий</b>', `<i>${esc(defang(c.comment))}</i>`),
     o.adminUrl && `<a href="${o.adminUrl}">Открыть заказ в админке</a>`,
   ]
     .filter(Boolean)
@@ -152,8 +156,8 @@ export function requestMessage(r: RequestNotice) {
       line('Язык сайта', LANG_NAMES[r.lang]),
     ),
     r.items
-      ? c.comment && block('💬 <b>Комментарий</b>', `<i>${esc(c.comment)}</i>`)
-      : block('🎯 <b>Цель клиента</b>', c.comment ? `<i>${esc(c.comment)}</i>` : 'не указана'),
+      ? c.comment && block('💬 <b>Комментарий</b>', `<i>${esc(defang(c.comment))}</i>`)
+      : block('🎯 <b>Цель клиента</b>', c.comment ? `<i>${esc(defang(c.comment))}</i>` : 'не указана'),
     r.adminUrl && `<a href="${r.adminUrl}">Открыть заявки в админке</a>`,
   ]
     .filter(Boolean)

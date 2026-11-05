@@ -5,7 +5,7 @@ import { AdminTitle, Empty } from '@/components/admin/parts'
 import { IconSearch } from '@/components/icons'
 import { requireAdmin } from '@/lib/admin/auth'
 import { DELIVERY_LABELS, ORDER_STATUSES } from '@/lib/constants'
-import { dateTime, eur, orderNo } from '@/lib/format'
+import { dateTime, eur, orderNo, telHref } from '@/lib/format'
 
 export const metadata = { title: 'Заказы' }
 
@@ -26,7 +26,8 @@ export default async function OrdersPage(props: PageProps<'/admin/orders'>) {
 
   if (status) query = query.eq('status', status)
   if (q) {
-    const safe = q.replace(/[,()%]/g, ' ')
+    // В фильтр .or(…) — только буквы, цифры, пробел, + и -: так текст поиска не может стать частью запроса
+    const safe = q.replace(/[^\p{L}\p{N} +-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 60)
     query = /^\d+$/.test(safe)
       ? query.or(`number.eq.${Number(safe)},phone.ilike.%${safe}%`)
       : query.or(`customer_name.ilike.%${safe}%,phone.ilike.%${safe}%`)
@@ -104,7 +105,7 @@ export default async function OrdersPage(props: PageProps<'/admin/orders'>) {
                     <Link href={`/admin/orders/${o.id}`} className="font-medium hover:text-brand">
                       {o.customer_name}
                     </Link>
-                    <a href={`tel:${o.phone}`} className="block text-sm text-mute tabular-nums hover:text-ink">
+                    <a href={telHref(o.phone)} className="block text-sm text-mute tabular-nums hover:text-ink">
                       {o.phone}
                     </a>
                   </td>

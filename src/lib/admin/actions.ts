@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { DOC_TYPES, ORDER_STATUSES, REQUEST_STATUSES } from '../constants'
 import { CATALOG_TAG, PAGES_TAG, SERVICES_TAG, SETTINGS_TAG } from '../data'
 import { slugify } from '../format'
-import { MEDIA_BUCKET, isSupabaseConfigured } from '../supabase/env'
+import { MEDIA_BUCKET, SUPABASE_URL, isSupabaseConfigured } from '../supabase/env'
 import { createSupabaseServer } from '../supabase/server'
 import { getSettings } from '../data'
 import { mailConfig, orderEmail, sendMail } from '../mail'
@@ -74,12 +74,38 @@ function dbError(message: string) {
   return `Ошибка базы данных: ${message}`
 }
 
-async function upload(sb: Sb, folder: string, file: File) {
-  const ext = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
-  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
-  const { error } = await sb.storage.from(MEDIA_BUCKET).upload(path, file, { contentType: file.type, upsert: false })
+// Разрешённые файлы — по первым байтам («сигнатуре»). Имя файла и тип от браузера можно подделать,
+// содержимое — нет. SVG и HTML не пропускаем: в них может быть скрипт.
+const FILE_KINDS = [
+  { kind: 'pdf', type: 'application/pdf', ext: 'pdf', test: (b: Uint8Array) => ascii(b, 0, 5) === '%PDF-' },
+  { kind: 'image', type: 'image/png', ext: 'png', test: (b: Uint8Array) => b[0] === 0x89 && ascii(b, 1, 4) === 'PNG' },
+  { kind: 'image', type: 'image/jpeg', ext: 'jpg', test: (b: Uint8Array) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
+  { kind: 'image', type: 'image/webp', ext: 'webp', test: (b: Uint8Array) => ascii(b, 0, 4) === 'RIFF' && ascii(b, 8, 12) === 'WEBP' },
+  { kind: 'image', type: 'image/gif', ext: 'gif', test: (b: Uint8Array) => ascii(b, 0, 4) === 'GIF8' },
+] as const
+type FileKind = (typeof FILE_KINDS)[number]['kind']
+
+function ascii(b: Uint8Array, from: number, to: number) {
+  return String.fromCharCode(...b.slice(from, to))
+}
+
+async function sniff(file: File, allowed: FileKind[]) {
+  const head = new Uint8Array(await file.slice(0, 16).arrayBuffer())
+  return FILE_KINDS.find((k) => allowed.includes(k.kind) && k.test(head)) ?? null
+}
+
+async function upload(sb: Sb, folder: string, file: File, allowed: FileKind[]) {
+  const kind = await sniff(file, allowed)
+  if (!kind) throw new Error(`«${file.name}» — неподдерживаемый файл. Можно: ${allowed.includes('pdf') ? 'PDF, ' : ''}JPG, PNG, WebP, GIF`)
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${kind.ext}`
+  const { error } = await sb.storage.from(MEDIA_BUCKET).upload(path, file, { contentType: kind.type, upsert: false })
   if (error) throw new Error(`Не удалось загрузить «${file.name}»: ${error.message}`)
   return sb.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
+}
+
+/** Ссылка на файл в нашем хранилище Supabase (а не чужой адрес или javascript:) */
+function isOurFile(url: unknown): url is string {
+  return typeof url === 'string' && url.startsWith(`${SUPABASE_URL.replace(/\/+$/, '')}/storage/v1/object/public/${MEDIA_BUCKET}/`)
 }
 
 async function removeFiles(sb: Sb, urls: string[]) {
@@ -106,7 +132,8 @@ export async function login(_prev: FormState, fd: FormData): Promise<FormState> 
   }
 
   const next = str(fd, 'next')
-  redirect(next.startsWith('/admin') ? next : '/admin')
+  // Только свой адрес в админке: без «//», «\\» и чужих доменов
+  redirect(/^\/admin(?:\/[A-Za-z0-9\-_/]*)?$/.test(next) && !next.includes('//') ? next : '/admin')
 }
 
 export async function logout() {
@@ -143,15 +170,17 @@ export async function saveProduct(_prev: FormState, fd: FormData): Promise<FormS
     }))
     .filter((v) => v.label)
 
-  const keptImages = json<string[]>(fd, 'images_keep', [])
-  const previousImages = json<string[]>(fd, 'images_prev', [])
+  // Прежние фото берём из базы, а не из формы: так нельзя подставить чужую ссылку или удалить чужой файл
+  const { data: before } = id ? await sb.from('products').select('images').eq('id', id).maybeSingle() : { data: null }
+  const previousImages = ((before?.images as string[] | null) ?? []).filter(isOurFile)
+  const keptImages = json<unknown[]>(fd, 'images_keep', []).filter((u): u is string => isOurFile(u) && previousImages.includes(u))
 
   let newImages: string[] = []
   try {
     const list = files(fd, 'images_new')
-    if (list.some((f) => !f.type.startsWith('image/'))) return { error: 'Фото должны быть картинками (JPG, PNG, WebP)' }
+    if (list.length > 12) return { error: 'Не больше 12 фото за раз' }
     if (list.some((f) => f.size > 5 * 1024 * 1024)) return { error: 'Каждое фото — не больше 5 МБ' }
-    newImages = await Promise.all(list.map((f) => upload(sb, `products/${slug}`, f)))
+    newImages = await Promise.all(list.map((f) => upload(sb, `products/${slug}`, f, ['image'])))
   } catch (e) {
     return { error: (e as Error).message }
   }
@@ -249,14 +278,15 @@ export async function saveCertificate(_prev: FormState, fd: FormData): Promise<F
   const title = str(fd, 'title')
   if (!title) return { error: 'Укажите название документа' }
 
-  let fileUrl = strOrNull(fd, 'file_url')
+  // Текущий файл берём из базы, а не из скрытого поля формы — подменить ссылку нельзя
+  const { data: current } = id ? await sb.from('certificates').select('file_url').eq('id', id).maybeSingle() : { data: null }
+  let fileUrl = isOurFile(current?.file_url) ? current.file_url : null
   const [file] = files(fd, 'file')
   if (file) {
-    if (!/pdf|image\//.test(file.type)) return { error: 'Загрузите PDF или изображение' }
     if (file.size > 15 * 1024 * 1024) return { error: 'Файл больше 15 МБ' }
     try {
       const prev = fileUrl
-      fileUrl = await upload(sb, 'certificates', file)
+      fileUrl = await upload(sb, 'certificates', file, ['pdf', 'image'])
       if (prev) await removeFiles(sb, [prev])
     } catch (e) {
       return { error: (e as Error).message }
@@ -288,7 +318,7 @@ export async function saveCertificate(_prev: FormState, fd: FormData): Promise<F
   updateTag(CATALOG_TAG)
   // Добавляли из карточки товара — туда и возвращаемся
   const back = str(fd, 'return_to')
-  redirect(back.startsWith('/admin/products/') ? `${back}?saved=doc` : '/admin/certificates?saved=1')
+  redirect(/^\/admin\/products\/[0-9a-f-]{36}$/.test(back) ? `${back}?saved=doc` : '/admin/certificates?saved=1')
 }
 
 export async function deleteCertificate(id: string) {

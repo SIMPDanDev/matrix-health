@@ -6,6 +6,7 @@ import type { Dictionary } from '@/i18n/dictionaries'
 import { PAYMENT_METHODS, type PaymentMethod } from '@/lib/constants'
 import { DEFAULT_LANG, hasLocale, type Lang } from '@/i18n/config'
 import { CATALOG_TAG, getCatalog, getSettings } from '@/lib/data'
+import { defang } from '@/lib/defang'
 import { localizeProduct } from '@/lib/localize'
 import { mailConfig, orderEmail, sendMail } from '@/lib/mail'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
@@ -73,6 +74,7 @@ export async function placeOrder(_prev: CheckoutState, fd: FormData): Promise<Ch
 
   if (error) {
     // Тексты ошибок place_order — на русском; переводим известные в коды
+    if (/Слишком много/i.test(error.message)) return { error: 'busy' }
     if (/Продажи/i.test(error.message)) return { error: 'closed' }
     if (/недоступ/i.test(error.message)) return { error: 'unavailable' }
     if (/Недостаточно/i.test(error.message)) return { error: 'stock' }
@@ -114,12 +116,14 @@ export async function placeOrder(_prev: CheckoutState, fd: FormData): Promise<Ch
         number,
         store: settings.store_name,
         phone: settings.phone,
+        // Письмо уходит на адрес, который ввёл посетитель, — ссылки в его тексте обезвреживаем (lib/defang.ts),
+        // чтобы через форму заказа нельзя было разослать «письмо от магазина» с фишинговой ссылкой
         customer: {
-          name: customer.customer_name,
-          city: customer.city,
-          address: customer.address,
+          name: defang(customer.customer_name),
+          city: defang(customer.city),
+          address: defang(customer.address),
           payment: customer.payment_method as PaymentMethod,
-          comment: customer.comment,
+          comment: defang(customer.comment),
         },
         lines: linesIn(buyerLang),
         delivery,
