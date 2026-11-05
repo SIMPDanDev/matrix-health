@@ -67,6 +67,7 @@ const en = {
   footer: {
     catalog: 'Catalog',
     customers: 'Customers',
+    users: 'For users',
     contact: 'Get in touch',
   },
 

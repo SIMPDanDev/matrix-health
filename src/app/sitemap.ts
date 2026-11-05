@@ -10,7 +10,7 @@ type Entry = { path: string; lastModified?: string; priority: number; changeFreq
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [{ products, categories }, peptides, settings] = await Promise.all([getCatalog(), getPage('peptides'), getSettings()])
-  // На информационном сайте нет страниц «Доставка» и «Контакты»
+  // На информационном сайте нет страниц «Доставка», «О магазине» и «Контакты»
   const sales = settings.sales_enabled
   // Пустые категории на сайте не показываются — и в карту их не кладём
   const used = categories.filter((c) => products.some((p) => p.category_id === c.id))
@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/consultation', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/certificates', priority: 0.6, changeFrequency: 'weekly' },
     ...(sales ? [{ path: '/delivery', priority: 0.5, changeFrequency: 'monthly' } as Entry] : []),
-    { path: '/about', priority: 0.5, changeFrequency: 'monthly' },
+    ...(sales ? [{ path: '/about', priority: 0.5, changeFrequency: 'monthly' } as Entry] : []),
     ...(sales ? [{ path: '/contacts', priority: 0.5, changeFrequency: 'monthly' } as Entry] : []),
     { path: '/privacy', priority: 0.2, changeFrequency: 'yearly' },
   ]

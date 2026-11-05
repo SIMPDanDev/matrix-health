@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { PageHead } from '@/components/page-head'
 import { btn, wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
@@ -13,6 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const { i18n, catalog, settings: s } = await getShop()
   const { t, path, fmt } = i18n
+  // Страница «О магазине» — только при продажах. На информационном сайте — в каталог
+  if (!s.sales_enabled) redirect(path('/catalog'))
   const a = t.about
 
   const facts = [

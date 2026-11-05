@@ -64,6 +64,7 @@ const ru: Dictionary = {
   footer: {
     catalog: 'Каталог',
     customers: 'Покупателям',
+    users: 'Пользователям',
     contact: 'Связаться',
   },
 

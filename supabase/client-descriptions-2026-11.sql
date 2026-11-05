@@ -5,7 +5,6 @@
 --  Повторный запуск безопасен. Файл сгенерирован.
 --
 --  Что исправлено в тексте клиента:
---   • MOTS-c — данные Cell Metabolism и Nature Communications получены на мышах;
 --   • 5-Amino-1MQ — клинических испытаний у людей не было, убраны выдуманные результаты и схема приёма;
 --   • кагрилинтид — REDEFINE 1: ~12 % в одиночку и ~20 % с семаглутидом;
 --   • NAD+ — исправлен путь синтеза;
@@ -17,7 +16,7 @@
 update public.products set
   description = $t$Эпиталон — синтетический тетрапептид Ala-Glu-Asp-Gly. Создан в Санкт-Петербургском институте биорегуляции и геронтологии под руководством В. Х. Хавинсона на основе эпиталамина — экстракта шишковидной железы (эпифиза).
 
-Эпифиз вырабатывает мелатонин и задаёт суточные ритмы организма. Эпиталон изучается как регулятор этой системы и как геропротектор: в работах Хавинсона он активировал теломеразу в клетках и увеличивал продолжительность жизни лабораторных животных.
+Эпифиз вырабатывает мелатонин и задаёт суточные ритмы организма. Эпиталон изучается как регулятор этой системы и как геропротектор: в работах Хавинсона он активировал теломеразу — фермент, который защищает концы хромосом и связан с процессами старения.
 
 Направления применения:
 • выработка мелатонина и суточные биоритмы;
@@ -30,7 +29,7 @@ update public.products set
   translations = translations || jsonb_build_object(
     'en', coalesce(translations -> 'en', '{}'::jsonb) || jsonb_build_object('description', $t$Epitalon is the synthetic tetrapeptide Ala-Glu-Asp-Gly. It was created at the St. Petersburg Institute of Bioregulation and Gerontology under V. Kh. Khavinson, based on epithalamin, an extract of the pineal gland.
 
-The pineal gland produces melatonin and sets the body’s daily rhythms. Epitalon is studied as a regulator of this system and as a geroprotector: in Khavinson’s work it activated telomerase in cells and extended the lifespan of laboratory animals.
+The pineal gland produces melatonin and sets the body’s daily rhythms. Epitalon is studied as a regulator of this system and as a geroprotector: in Khavinson’s work it activated telomerase — an enzyme that protects the ends of chromosomes and is linked to ageing.
 
 Areas of use:
 • melatonin production and daily biorhythms;
@@ -42,7 +41,7 @@ Areas of use:
 • healthy ageing.$t$::text),
     'ro', coalesce(translations -> 'ro', '{}'::jsonb) || jsonb_build_object('description', $t$Epitalonul este tetrapeptida sintetică Ala-Glu-Asp-Gly. A fost creat la Institutul de Bioreglare și Gerontologie din Sankt Petersburg sub conducerea lui V. H. Havinson, pe baza epitalaminei — un extract din glanda pineală (epifiză).
 
-Epifiza produce melatonină și stabilește ritmurile zilnice ale organismului. Epitalonul este studiat ca regulator al acestui sistem și ca geroprotector: în lucrările lui Havinson a activat telomeraza în celule și a prelungit viața animalelor de laborator.
+Epifiza produce melatonină și stabilește ritmurile zilnice ale organismului. Epitalonul este studiat ca regulator al acestui sistem și ca geroprotector: în lucrările lui Havinson a activat telomeraza — o enzimă care protejează capetele cromozomilor și este legată de procesele de îmbătrânire.
 
 Direcții de utilizare:
 • producția de melatonină și bioritmurile zilnice;
@@ -105,8 +104,6 @@ update public.products set
 
 MOTS-c регулирует клеточный энергетический баланс: активирует фермент AMPK, влияет на обмен глюкозы и чувствительность к инсулину. При метаболическом стрессе он перемещается в ядро клетки и меняет работу генов, отвечающих за обмен веществ и защиту клетки. Пептид циркулирует в крови, поэтому его считают митохондриальным гормоном; его уровень растёт при физической нагрузке.
 
-MOTS-c описан в 2015 году в журнале Cell Metabolism: у мышей на жирной диете он предотвращал ожирение и инсулинорезистентность. В работе 2021 года в Nature Communications MOTS-c повышал физическую выносливость у молодых и пожилых мышей.
-
 Направления исследований:
 • обмен веществ и масса тела;
 • толерантность к глюкозе и чувствительность к инсулину;
@@ -120,8 +117,6 @@ MOTS-c описан в 2015 году в журнале Cell Metabolism: у мы�
 
 MOTS-c regulates cellular energy balance: it activates the enzyme AMPK and affects glucose metabolism and insulin sensitivity. Under metabolic stress it moves into the cell nucleus and changes the activity of genes responsible for metabolism and cell protection. The peptide circulates in the blood, so it is considered a mitochondrial hormone; its level rises with physical exercise.
 
-MOTS-c was described in 2015 in Cell Metabolism: in mice on a high-fat diet it prevented obesity and insulin resistance. In a 2021 study in Nature Communications, MOTS-c improved physical endurance in young and old mice.
-
 Areas of research:
 • metabolism and body weight;
 • glucose tolerance and insulin sensitivity;
@@ -133,8 +128,6 @@ Areas of research:
     'ro', coalesce(translations -> 'ro', '{}'::jsonb) || jsonb_build_object('description', $t$MOTS-c este o peptidă din 16 aminoacizi (Met-Arg-Trp-Gln-Glu-Met-Gly-Tyr-Ile-Phe-Tyr-Pro-Arg-Lys-Leu-Arg), codificată în ADN-ul mitocondrial. Face parte din peptidele mitocondriale (mitochondrial-derived peptides, MDP) — molecule de semnalizare prin care mitocondriile influențează metabolismul întregului organism.
 
 MOTS-c reglează echilibrul energetic al celulei: activează enzima AMPK și influențează metabolismul glucozei și sensibilitatea la insulină. În condiții de stres metabolic se deplasează în nucleul celulei și modifică activitatea genelor responsabile de metabolism și protecția celulei. Peptida circulă în sânge, de aceea este considerată un hormon mitocondrial; nivelul ei crește în timpul efortului fizic.
-
-MOTS-c a fost descrisă în 2015 în revista Cell Metabolism: la șoarecii hrăniți cu dietă bogată în grăsimi a prevenit obezitatea și rezistența la insulină. Într-un studiu din 2021 publicat în Nature Communications, MOTS-c a crescut rezistența fizică la șoarecii tineri și bătrâni.
 
 Direcții de cercetare:
 • metabolismul și greutatea corporală;
@@ -315,7 +308,7 @@ where slug = $t$ghk-cu$t$;
 update public.products set
   description = $t$5-Amino-1MQ (5-амино-1-метилхинолиний) — небольшая синтетическая молекула, а не пептид. Она подавляет фермент никотинамид-N-метилтрансферазу (NNMT), который участвует в обмене никотинамида — формы витамина B3 — и особенно активен в жировой ткани.
 
-Когда NNMT заблокирован, в клетках остаётся больше никотинамида для синтеза NAD+ и меняется энергетический обмен жировых клеток. В исследовании 2018 года у мышей с ожирением 5-Amino-1MQ снижал массу тела и жировой ткани и уменьшал размер жировых клеток, хотя животные ели столько же. У пожилых мышей он улучшал восстановление мышц после травмы.
+Когда NNMT заблокирован, в клетках остаётся больше никотинамида для синтеза NAD+ и меняется энергетический обмен жировых клеток.
 
 Направления исследований:
 • расщепление жиров и снижение массы тела;
@@ -326,7 +319,7 @@ update public.products set
   translations = translations || jsonb_build_object(
     'en', coalesce(translations -> 'en', '{}'::jsonb) || jsonb_build_object('description', $t$5-Amino-1MQ (5-amino-1-methylquinolinium) is a small synthetic molecule, not a peptide. It inhibits the enzyme nicotinamide N-methyltransferase (NNMT), which takes part in the metabolism of nicotinamide — a form of vitamin B3 — and is especially active in adipose tissue.
 
-When NNMT is blocked, cells keep more nicotinamide for NAD+ synthesis and the energy metabolism of fat cells changes. In a 2018 study in obese mice, 5-Amino-1MQ reduced body weight and fat mass and shrank fat cells, although the animals ate the same amount. In old mice it improved muscle recovery after injury.
+When NNMT is blocked, cells keep more nicotinamide for NAD+ synthesis and the energy metabolism of fat cells changes.
 
 Areas of research:
 • fat breakdown and weight loss;
@@ -336,7 +329,7 @@ Areas of research:
 • age-related metabolic changes.$t$::text),
     'ro', coalesce(translations -> 'ro', '{}'::jsonb) || jsonb_build_object('description', $t$5-Amino-1MQ (5-amino-1-metilchinoliniu) este o moleculă sintetică mică, nu o peptidă. Inhibă enzima nicotinamid-N-metiltransferaza (NNMT), care participă la metabolismul nicotinamidei — o formă a vitaminei B3 — și este deosebit de activă în țesutul adipos.
 
-Când NNMT este blocată, în celule rămâne mai multă nicotinamidă pentru sinteza NAD+ și se modifică metabolismul energetic al celulelor adipoase. Într-un studiu din 2018 pe șoareci obezi, 5-Amino-1MQ a redus greutatea corporală și masa de grăsime și a micșorat celulele adipoase, deși animalele au mâncat la fel. La șoarecii bătrâni a îmbunătățit refacerea mușchilor după traumatisme.
+Când NNMT este blocată, în celule rămâne mai multă nicotinamidă pentru sinteza NAD+ și se modifică metabolismul energetic al celulelor adipoase.
 
 Direcții de cercetare:
 • descompunerea grăsimilor și scăderea în greutate;

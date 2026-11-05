@@ -7,7 +7,7 @@ import { wrap } from './ui'
 export async function SiteFooter() {
   const { i18n, catalog, settings: s } = await getShop()
   const { t, path } = i18n
-  // На информационном сайте нет «Доставки» и «Контактов», а телефона, почты и адреса нет в настройках (getSettings)
+  // На информационном сайте нет «Доставки», «О магазине» и «Контактов», а телефона, почты и адреса нет в настройках (getSettings)
   const sales = s.sales_enabled
   const hasContacts = Boolean(s.phone || s.email || s.address)
 
@@ -30,12 +30,13 @@ export async function SiteFooter() {
           <Link href={path('/catalog?sort=new')}>{t.nav.newArrivals}</Link>
         </FooterCol>
 
-        <FooterCol title={t.footer.customers}>
+        {/* «Покупателям» — при продажах, на информационном сайте — «Пользователям» */}
+        <FooterCol title={sales ? t.footer.customers : t.footer.users}>
           <Link href={path('/peptides')}>{t.nav.peptides}</Link>
           <Link href={path('/consultation')}>{t.nav.consultation}</Link>
           <Link href={path('/certificates')}>{t.nav.certificates}</Link>
           {sales && <Link href={path('/delivery')}>{t.nav.deliveryFull}</Link>}
-          <Link href={path('/about')}>{t.nav.about}</Link>
+          {sales && <Link href={path('/about')}>{t.nav.about}</Link>}
           {sales && <Link href={path('/contacts')}>{t.nav.contacts}</Link>}
         </FooterCol>
 

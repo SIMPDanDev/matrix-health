@@ -65,6 +65,7 @@ const ro: Dictionary = {
   footer: {
     catalog: 'Catalog',
     customers: 'Pentru clienți',
+    users: 'Pentru utilizatori',
     contact: 'Contactați-ne',
   },
 
