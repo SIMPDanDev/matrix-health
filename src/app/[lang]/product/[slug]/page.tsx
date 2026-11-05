@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { BuyBox } from '@/components/buy-box'
+import { BuyBoxFromUrl, DosePicker, DosePickerFromUrl } from '@/components/dose-picker'
 import { DocRow } from '@/components/doc-row'
 import { JsonLd } from '@/components/json-ld'
 import { IconShield, IconSnow, IconTruck } from '@/components/icons'
@@ -53,6 +54,8 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
 
   const { product: p, certificates, related } = data
   const withDocs = new Set(catalog.certificates.map((c) => c.product_id))
+  // Для выбора дозировки на информационном сайте — только название, без цены и остатка
+  const doses = p.variants.map((v) => ({ id: v.id, label: v.label }))
   const isCold = p.form === 'vials' || p.specs.some((s) => /\+2|\+8/.test(s.value))
 
   const sections = [
@@ -115,11 +118,23 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
             )}
           </p>
 
-          {/* Информационный сайт: ни цены, ни корзины — цены не попадают даже в браузер */}
-          {settings.sales_enabled && (
+          {/* Дозировка из ссылки (?dose=50mg, например из QR на этикетке) читается в браузере — поэтому Suspense:
+              в готовой странице сразу стоит первая дозировка, а нужная выбирается при загрузке */}
+          {settings.sales_enabled ? (
             <div className="mt-6">
-              <BuyBox product={p} />
+              <Suspense fallback={<BuyBox product={p} />}>
+                <BuyBoxFromUrl product={p} />
+              </Suspense>
             </div>
+          ) : (
+            // Информационный сайт: только выбор дозировки — ни цен, ни остатков, они не попадают даже в браузер
+            doses.length > 1 && (
+              <div className="mt-6">
+                <Suspense fallback={<DosePicker variants={doses} />}>
+                  <DosePickerFromUrl variants={doses} />
+                </Suspense>
+              </div>
+            )
           )}
 
           {/* Документы, доставка, термопакет — только для продаж. На информационном сайте документы партии — в разделе ниже */}
@@ -240,13 +255,36 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
   )
 }
 
+/**
+ * Текст из админки: абзацы — через пустую строку, пункты списка — строки, начинающиеся с «•», «-» или «✔».
+ * Строка перед списком (например «Для чего используется:») становится его заголовком.
+ */
 function Paragraphs({ text }: { text: string }) {
+  // Тексты из админки приходят с \r\n — абзацы делим по пустой строке в любом формате
+  const blocks = text.split(/\r?\n(?:[ \t]*\r?\n)+/)
   return (
     <div className="space-y-4 text-[17px] leading-[1.7] text-ink-2">
-      {/* Тексты из админки приходят с \r\n — абзацы делим по пустой строке в любом формате */}
-      {text.split(/\r?\n(?:[ \t]*\r?\n)+/).map((para) => (
-        <p key={para}>{para}</p>
-      ))}
+      {blocks.map((block, i) => {
+        const lines = block.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+        const isItem = (l: string) => /^[•✔\-–]\s*/.test(l)
+        if (!lines.some(isItem)) return <p key={i}>{lines.join(' ')}</p>
+        return (
+          <div key={i} className="space-y-2">
+            {lines.map((l, j) =>
+              isItem(l) ? null : (
+                <p key={j} className={j === 0 && lines.length > 1 ? 'font-semibold text-ink' : undefined}>
+                  {l}
+                </p>
+              ),
+            )}
+            <ul className="list-disc space-y-1.5 pl-5 marker:text-brand">
+              {lines.filter(isItem).map((l, j) => (
+                <li key={j}>{l.replace(/^[•✔\-–]\s*/, '')}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      })}
     </div>
   )
 }

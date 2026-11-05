@@ -41,7 +41,7 @@ export default async function EditProductPage(props: PageProps<'/admin/products/
         product={product}
         categories={(cats ?? []) as Category[]}
         filters={filters}
-        qr={<QrPanel slug={product.slug} />}
+        qr={<QrPanel slug={product.slug} variants={product.variants} />}
       />
     </>
   )

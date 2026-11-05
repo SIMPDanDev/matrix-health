@@ -15,12 +15,13 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return protectAdmin(request)
 
   // Короткая ссылка из QR-кода на этикетке: /P/SELANK → /product/selank (дальше — язык как обычно).
+  // С дозировкой: /P/SS-31/50MG → /product/ss-31?dose=50mg — откроется сразу с выбранными 50 mg.
   // В QR она записана большими буквами, так код получается мельче — см. lib/qr.ts
-  const qr = /^\/p\/([a-z0-9-]+)\/?$/i.exec(pathname)
+  const qr = /^\/p\/([a-z0-9-]+)(?:\/([a-z0-9.]+))?\/?$/i.exec(pathname)
   if (qr) {
     const url = request.nextUrl.clone()
     url.pathname = `/product/${qr[1].toLowerCase()}`
-    url.search = ''
+    url.search = qr[2] ? `?dose=${qr[2].toLowerCase()}` : ''
     return NextResponse.redirect(url) // 307: ссылка на этикетке навсегда, а адрес товара может поменяться
   }
 

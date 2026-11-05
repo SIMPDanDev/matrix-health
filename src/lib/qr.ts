@@ -19,13 +19,16 @@ const PX = 40
 /** Размер кода на этикетке вместе с белым полем, мм */
 export const QR_SIZE_MM = 10
 
-/** Что зашито в QR: короткая ссылка на товар, большими буквами (так короче) */
-export function qrLink(slug: string) {
-  return `${SITE_URL}/P/${slug}`.toUpperCase()
+/**
+ * Что зашито в QR: короткая ссылка на товар, большими буквами (так короче).
+ * code — дозировка (см. lib/variants.ts): /P/SS-31/50MG откроет товар сразу с выбранными 50 mg
+ */
+export function qrLink(slug: string, code?: string | null) {
+  return `${SITE_URL}/P/${slug}${code ? `/${code}` : ''}`.toUpperCase()
 }
 
-function matrix(slug: string) {
-  const { modules, version } = QRCode.create(qrLink(slug), { errorCorrectionLevel: 'M' })
+function matrix(link: string) {
+  const { modules, version } = QRCode.create(link, { errorCorrectionLevel: 'M' })
   const n = modules.size
   const total = n + QUIET * 2
   const dark = (x: number, y: number) => {
@@ -37,13 +40,13 @@ function matrix(slug: string) {
 }
 
 /** Сведения для админки: версия кода и число модулей */
-export function qrInfo(slug: string) {
-  const { total, version } = matrix(slug)
-  return { link: qrLink(slug), version, modules: total - QUIET * 2, moduleMm: QR_SIZE_MM / total }
+export function qrInfo(link: string) {
+  const { total, version } = matrix(link)
+  return { link, version, modules: total - QUIET * 2, moduleMm: QR_SIZE_MM / total }
 }
 
-export function qrSvg(slug: string) {
-  const { total, dark } = matrix(slug)
+export function qrSvg(link: string) {
+  const { total, dark } = matrix(link)
   let d = ''
   for (let y = 0; y < total; y++) {
     for (let x = 0; x < total; ) {
@@ -63,8 +66,8 @@ export function qrSvg(slug: string) {
   )
 }
 
-export function qrPng(slug: string) {
-  const { total, dark } = matrix(slug)
+export function qrPng(link: string) {
+  const { total, dark } = matrix(link)
   const size = total * PX
   const rowBytes = Math.ceil(size / 8)
 

@@ -3,14 +3,18 @@
 import { useState } from 'react'
 import { useI18n } from '@/i18n/client'
 import type { Product } from '@/lib/types'
+import { rememberDose } from '@/lib/variants'
 import { BuyButtons } from './add-to-cart'
 import { IconMinus, IconPlus } from './icons'
 
-/** Цена, выбор дозировки и «В корзину» на странице товара. Только когда продажи включены. */
-export function BuyBox({ product }: { product: Product }) {
+/**
+ * Цена, выбор дозировки и «В корзину» на странице товара. Только когда продажи включены.
+ * initialVariantId — дозировка из ссылки (?dose=…, например из QR-кода на этикетке), см. BuyBoxFromUrl
+ */
+export function BuyBox({ product, initialVariantId }: { product: Product; initialVariantId?: string | null }) {
   const { t, money, fmt } = useI18n()
   const { variants } = product
-  const firstAvailable = variants.find((v) => v.stock > 0) ?? variants[0]
+  const firstAvailable = variants.find((v) => v.id === initialVariantId) ?? variants.find((v) => v.stock > 0) ?? variants[0]
   const [variantId, setVariantId] = useState(firstAvailable?.id ?? null)
   const [qty, setQty] = useState(1)
 
@@ -43,6 +47,7 @@ export function BuyBox({ product }: { product: Product }) {
                 onClick={() => {
                   setVariantId(v.id)
                   setQty(1)
+                  rememberDose(variants, v.id)
                 }}
                 aria-pressed={v.id === variantId}
                 className={`flex h-11 items-center gap-2 rounded-full border px-4 text-[15px] font-medium transition-colors ${
