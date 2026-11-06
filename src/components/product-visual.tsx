@@ -27,6 +27,8 @@ export function ProductVisual({
   sizes?: string
   priority?: boolean
 }) {
+  // Фото заполняет плитку целиком: вертикальный или горизонтальный снимок обрезается ровно по квадрату
+  // от центра, без пустых полей по бокам
   if (image) {
     return (
       <Image
@@ -35,7 +37,7 @@ export function ProductVisual({
         fill
         sizes={sizes ?? '(max-width: 768px) 50vw, 25vw'}
         priority={priority}
-        className="object-contain p-[8%]"
+        className="object-cover"
       />
     )
   }

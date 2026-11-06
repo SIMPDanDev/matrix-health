@@ -21,7 +21,12 @@ export async function ProductCard({ product, hasDocs }: { product: Product; hasD
   return (
     <article className="group flex flex-col rounded-[28px] bg-surface p-2 ring-1 ring-line transition-shadow hover:shadow-[0_12px_32px_-16px_rgba(15,26,68,0.25)]">
       <Link href={href} className={`relative flex aspect-square items-center justify-center overflow-hidden rounded-[22px] ${c.bg}`}>
-        <div className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.03]">
+        {/* Фото — на всю плитку и чуть приближается при наведении; нарисованная упаковка — приподнимается */}
+        <div
+          className={`transition-transform duration-300 ${
+            product.images[0] ? 'absolute inset-0 group-hover:scale-[1.04]' : 'group-hover:-translate-y-1 group-hover:scale-[1.03]'
+          }`}
+        >
           <ProductVisual
             form={product.form}
             image={product.images[0]}

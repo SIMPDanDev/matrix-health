@@ -27,7 +27,8 @@ export function ProductGallery({
   return (
     <div className="flex flex-col gap-3">
       <div className={`relative flex aspect-square items-center justify-center overflow-hidden rounded-[32px] ${t.bg}`}>
-        <div aria-hidden className="absolute size-[70%] rounded-full bg-white/35" />
+        {/* Белый круг — подложка только для нарисованной упаковки, за фото он не нужен */}
+        {!current && <div aria-hidden className="absolute size-[70%] rounded-full bg-white/35" />}
         <ProductVisual
           form={form}
           image={current}
@@ -54,7 +55,7 @@ export function ProductGallery({
                 i === active ? 'ring-2 ring-brand' : 'opacity-70 hover:opacity-100'
               }`}
             >
-              <Image src={src} alt="" fill sizes="96px" className="object-contain p-1.5" />
+              <Image src={src} alt="" fill sizes="96px" className="object-cover" />
             </button>
           ))}
         </div>
