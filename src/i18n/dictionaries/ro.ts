@@ -227,6 +227,11 @@ const ro: Dictionary = {
     allInCart: 'Tot stocul disponibil e deja în coș',
     noBatch: 'Fără lot',
     fileOnRequest: 'Fișier la cerere',
+    docPreview: 'Vizualizare document',
+    docDownload: 'Descarcă',
+    docClose: 'Închide',
+    docLoading: 'Se încarcă documentul…',
+    docError: 'Documentul nu a putut fi afișat. Descărcați-l cu butonul de mai sus.',
   },
 
   catalog: {

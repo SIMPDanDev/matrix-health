@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation'
 import { DOC_TYPES, ORDER_STATUSES, REQUEST_STATUSES } from '../constants'
 import { CATALOG_TAG, PAGES_TAG, SERVICES_TAG, SETTINGS_TAG } from '../data'
 import { slugify } from '../format'
-import { MEDIA_BUCKET, SUPABASE_URL, isSupabaseConfigured } from '../supabase/env'
+import { isOurFile } from '../doc-links'
+import { MEDIA_BUCKET, isSupabaseConfigured } from '../supabase/env'
 import { createSupabaseServer } from '../supabase/server'
 import { getSettings } from '../data'
 import { mailConfig, orderEmail, sendMail } from '../mail'
@@ -101,11 +102,6 @@ async function upload(sb: Sb, folder: string, file: File, allowed: FileKind[]) {
   const { error } = await sb.storage.from(MEDIA_BUCKET).upload(path, file, { contentType: kind.type, upsert: false })
   if (error) throw new Error(`Не удалось загрузить «${file.name}»: ${error.message}`)
   return sb.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
-}
-
-/** Ссылка на файл в нашем хранилище Supabase (а не чужой адрес или javascript:) */
-function isOurFile(url: unknown): url is string {
-  return typeof url === 'string' && url.startsWith(`${SUPABASE_URL.replace(/\/+$/, '')}/storage/v1/object/public/${MEDIA_BUCKET}/`)
 }
 
 async function removeFiles(sb: Sb, urls: string[]) {

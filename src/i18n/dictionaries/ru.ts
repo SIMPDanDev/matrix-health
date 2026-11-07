@@ -227,6 +227,11 @@ const ru: Dictionary = {
     allInCart: 'Весь остаток уже в корзине',
     noBatch: 'Без партии',
     fileOnRequest: 'Файл по запросу',
+    docPreview: 'Просмотр документа',
+    docDownload: 'Скачать',
+    docClose: 'Закрыть',
+    docLoading: 'Загружаем документ…',
+    docError: 'Не удалось показать документ. Скачайте его кнопкой выше.',
   },
 
   catalog: {

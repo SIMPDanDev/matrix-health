@@ -14,6 +14,7 @@ import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { getSettings } from '@/lib/data'
 import { filterName } from '@/lib/filters'
+import { docHref, docNames } from '@/lib/doc-links'
 import { doseLabels } from '@/lib/variants'
 import { breadcrumbSchema, productSchema, snippet } from '@/lib/seo'
 import { getShop, getShopProduct, shopMeta } from '@/lib/shop'
@@ -55,6 +56,8 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
 
   const { product: p, certificates, related } = data
   const withDocs = new Set(catalog.certificates.map((c) => c.product_id))
+  // Имена файлов документов считаются по всем документам сайта — так они одинаковы на всех страницах
+  const docFiles = docNames(catalog.certificates)
   // Для выбора дозировки на информационном сайте — только название, без цены и остатка
   const doses = p.variants.map((v) => ({ id: v.id, label: v.label }))
   // Дозировка, выбранная по умолчанию, — как у кнопок: при продажах первая в наличии, иначе первая
@@ -63,7 +66,7 @@ async function ProductView({ params }: Pick<PageProps<'/[lang]/product/[slug]'>,
   const docRows = certificates.map((c) => ({
     key: c.id,
     variantIds: c.variant_ids ?? [],
-    node: <DocRow cert={c} doses={doseLabels(c.variant_ids, p.variants)} />,
+    node: <DocRow cert={c} doses={doseLabels(c.variant_ids, p.variants)} href={docHref(docFiles, c.id)} />,
   }))
   const noDocs = <p className="text-ink-2">{settings.sales_enabled ? t.product.docsMissing : t.product.docsMissingInfo}</p>
   const isCold = p.form === 'vials' || p.specs.some((s) => /\+2|\+8/.test(s.value))

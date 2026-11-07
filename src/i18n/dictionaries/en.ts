@@ -224,6 +224,11 @@ const en = {
     allInCart: 'All available stock is in your cart',
     noBatch: 'No batch',
     fileOnRequest: 'File on request',
+    docPreview: 'View document',
+    docDownload: 'Download',
+    docClose: 'Close',
+    docLoading: 'Loading the document…',
+    docError: 'Could not display the document. Use the Download button above.',
   },
 
   catalog: {

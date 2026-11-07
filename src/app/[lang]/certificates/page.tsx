@@ -3,12 +3,14 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { IconDownload } from '@/components/icons'
+import { DocPreview } from '@/components/doc-preview'
 import { LotSearch } from '@/components/lot-search'
 import { wrap } from '@/components/ui'
 import { getI18n } from '@/i18n/server'
 import { telHref } from '@/lib/format'
 import { getShop, shopMeta } from '@/lib/shop'
 import type { Certificate } from '@/lib/types'
+import { docHref, docNames } from '@/lib/doc-links'
 import { doseLabels } from '@/lib/variants'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -78,6 +80,8 @@ async function Registry({ searchParams }: Pick<PageProps<'/[lang]/certificates'>
   const { i18n, catalog, settings: s } = await getShop()
   const { t, path, date, plural, fmt } = i18n
 
+  // Адреса документов на нашем домене (/docs/GLOW-COA-SP-0113.pdf) — по всем документам сайта
+  const docFiles = docNames(catalog.certificates)
   const list = catalog.certificates.filter((c) => (!cat || c.product?.category?.slug === cat) && (!q || matches(c, q)))
   const href = (next: { q?: string; cat?: string }) => {
     const qs = new URLSearchParams()
@@ -144,10 +148,16 @@ async function Registry({ searchParams }: Pick<PageProps<'/[lang]/certificates'>
               {list.map((c) => (
                 <tr key={c.id} className="grid grid-cols-2 gap-x-4 gap-y-1 px-5 py-4 md:table-row md:p-0 md:hover:bg-paper">
                   <td className="col-span-2 md:px-5 md:py-4">
-                    <span className="mr-2 inline-block rounded-sm bg-brand-soft px-1.5 py-0.5 text-xs font-medium text-brand-dark">
-                      {t.docTypes[c.doc_type] ?? c.doc_type}
+                    {/* Миниатюра документа — по нажатию открывается просмотр */}
+                    <span className="flex items-center gap-3">
+                      <DocPreview url={docHref(docFiles, c.id)} title={c.title} size={44} />
+                      <span>
+                        <span className="mr-2 inline-block rounded-sm bg-brand-soft px-1.5 py-0.5 text-xs font-medium text-brand-dark">
+                          {t.docTypes[c.doc_type] ?? c.doc_type}
+                        </span>
+                        <span className="font-medium">{c.title}</span>
+                      </span>
                     </span>
-                    <span className="font-medium">{c.title}</span>
                   </td>
                   <td className="col-span-2 md:px-5 md:py-4">
                     {c.product ? (
@@ -168,9 +178,9 @@ async function Registry({ searchParams }: Pick<PageProps<'/[lang]/certificates'>
                   <td className="font-mono text-sm text-mute md:px-5 md:py-4">{date(c.issued_at)}</td>
                   <td className="col-span-2 text-sm text-ink-2 md:px-5 md:py-4">{c.lab ?? '—'}</td>
                   <td className="col-span-2 pt-2 md:px-5 md:py-4 md:text-right">
-                    {c.file_url ? (
+                    {docHref(docFiles, c.id) ? (
                       <a
-                        href={c.file_url}
+                        href={docHref(docFiles, c.id) as string}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex h-9 items-center gap-2 rounded-full border border-line-strong px-3 text-sm font-medium whitespace-nowrap hover:border-ink"
